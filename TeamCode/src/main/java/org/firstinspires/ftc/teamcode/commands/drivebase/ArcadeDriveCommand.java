@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.commands;
+package org.firstinspires.ftc.teamcode.commands.drivebase;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -18,10 +18,10 @@ public class ArcadeDriveCommand extends CommandBase {
     @Override
     public void execute() {
         float rotationSpeed = this.gamepad.right_stick_x * 0.2f;
-        float linerSpeed = this.gamepad.right_stick_y * 0.8f;
+        float linerSpeed = -this.gamepad.right_stick_y * 0.8f;
 
-        float leftSpeed = linerSpeed + rotationSpeed;
-        float rightSpeed = linerSpeed - rotationSpeed;
+        float leftSpeed = linerSpeed - rotationSpeed;
+        float rightSpeed = linerSpeed + rotationSpeed;
 
         this.driveBase.moveMotors(leftSpeed, rightSpeed);
     }
