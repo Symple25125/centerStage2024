@@ -15,11 +15,11 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void moveMotor(double power) {
-        this.motor.set(power);
+        this.motor.set(power + ArmSubsystem.calcFeedForward(getCurrentPositionDeg()));
     }
 
     public double getCurrentPositionDeg() {
-        return convertRelartiveToAbsolute(countsToDeg(this.motor.getCurrentPosition()));
+        return convertRelativeToAbsolute(countsToDeg(this.motor.getCurrentPosition()));
     }
 
     public static double calcFeedForward(double deg) {
@@ -27,10 +27,10 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public static double countsToDeg(int counts) {
-        return  ((counts*360) / 288);
+        return  ((counts*360) / 288.0);
     }
 
-    public static double convertRelartiveToAbsolute(double deg) {
+    public static double convertRelativeToAbsolute(double deg) {
         return deg + STARTING_DEG;
     }
 }

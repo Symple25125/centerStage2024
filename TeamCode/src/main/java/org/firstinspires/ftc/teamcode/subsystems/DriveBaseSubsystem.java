@@ -11,7 +11,7 @@ public class DriveBaseSubsystem extends SubsystemBase {
         this.rightMotor = hMap.get(Motor.class, "right_leg");
     }
 
-    public void moveMotors(float leftPower, float rightPower) {
+    public void moveMotors(double leftPower, double rightPower) {
         leftMotor.set(leftPower);
         rightMotor.set(rightPower);
     }

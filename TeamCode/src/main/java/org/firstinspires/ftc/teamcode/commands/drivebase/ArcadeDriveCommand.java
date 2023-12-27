@@ -1,15 +1,16 @@
 package org.firstinspires.ftc.teamcode.commands.drivebase;
 
 import com.arcrobotics.ftclib.command.CommandBase;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 
 public class ArcadeDriveCommand extends CommandBase {
     private final DriveBaseSubsystem driveBase;
-    private final Gamepad gamepad;
+    private final GamepadEx gamepad;
 
-    public ArcadeDriveCommand(DriveBaseSubsystem driveBase, Gamepad gamepad) {
+    public ArcadeDriveCommand(DriveBaseSubsystem driveBase, GamepadEx gamepad) {
         addRequirements(driveBase);
         this.driveBase = driveBase;
         this.gamepad = gamepad;
@@ -17,11 +18,11 @@ public class ArcadeDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        float rotationSpeed = this.gamepad.right_stick_x * 0.2f;
-        float linerSpeed = -this.gamepad.right_stick_y * 0.8f;
+        double rotationSpeed = this.gamepad.getRightX() * 0.2f;
+        double linerSpeed = -this.gamepad.getRightY() * 0.8f;
 
-        float leftSpeed = linerSpeed - rotationSpeed;
-        float rightSpeed = linerSpeed + rotationSpeed;
+        double leftSpeed = linerSpeed - rotationSpeed;
+        double rightSpeed = linerSpeed + rotationSpeed;
 
         this.driveBase.moveMotors(leftSpeed, rightSpeed);
     }
