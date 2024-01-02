@@ -11,7 +11,7 @@ public class ArmSubsystem extends SubsystemBase {
     private static final double STARTING_DEG = -45;
 
     public ArmSubsystem(HardwareMap hMap) {
-        this.motor = hMap.get(MotorEx.class, "arm_motor");
+        this.motor = new MotorEx(hMap, "arm_motor");
         this.motor.resetEncoder();
 
         this.motor.setPositionCoefficient(0);

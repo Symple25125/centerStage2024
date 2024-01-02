@@ -19,7 +19,7 @@ public class ArcadeDriveCommand extends CommandBase {
     @Override
     public void execute() {
         double rotationSpeed = this.gamepad.getRightX() * 0.2f;
-        double linerSpeed = -this.gamepad.getRightY() * 0.8f;
+        double linerSpeed = -this.gamepad.getLeftY() * 0.8f;
 
         double leftSpeed = linerSpeed - rotationSpeed;
         double rightSpeed = linerSpeed + rotationSpeed;
