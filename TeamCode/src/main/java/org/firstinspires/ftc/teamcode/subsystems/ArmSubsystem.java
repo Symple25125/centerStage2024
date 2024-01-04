@@ -16,7 +16,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public ArmSubsystem(HardwareMap hMap, Telemetry telemetry) {
         this.telemetry = telemetry;
-        this.feedForward = new FeedForward(0, 0);
+        this.feedForward = new FeedForward(0, -33.75);
 
         this.motor = new MotorEx(hMap, "arm_motor");
         this.motor.resetEncoder();
