@@ -20,8 +20,17 @@ public class JointSubSystem extends SubsystemBase {
         servo.setPosition(position);
     }
 
-    public static class JointPositions {
-        public static final double PICKUP = 0;
-        public static final double PUT = 0;
+    // in deg
+    public enum JointPositions {
+        START(0),
+        PICKUP(0),
+        PUT(0);
+
+
+        public final double deg;
+
+        JointPositions(double deg) {
+            this.deg = deg;
+        }
     }
 }

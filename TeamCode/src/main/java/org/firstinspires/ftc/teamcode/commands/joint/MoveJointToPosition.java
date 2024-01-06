@@ -5,7 +5,7 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
 
 public class MoveJointToPosition extends InstantCommand {
-    public MoveJointToPosition(JointSubSystem jointSubSystem, double jointPosition) {
-        super(() -> jointSubSystem.moveServo(jointPosition));
+    public MoveJointToPosition(JointSubSystem jointSubSystem, JointSubSystem.JointPositions jointPosition) {
+        super(() -> jointSubSystem.moveServo(jointPosition.deg));
     }
 }

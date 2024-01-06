@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.util;
 
 public class FeedForward {
-    private final double FEED_FORWARD_KG;
+    private final double KG;
     private final double STARTING_DEG;
 
     public FeedForward(double kg) {
@@ -9,23 +9,23 @@ public class FeedForward {
     }
 
     public FeedForward(double kg, double startingDeg) {
-        this.FEED_FORWARD_KG = kg;
+        this.KG = kg;
         this.STARTING_DEG = startingDeg;
     }
 
-    public double calcFeedForward(double deg) {
-        return Math.cos(Math.toRadians(deg)) * FEED_FORWARD_KG;
+    /**
+     * @param deg the current object deg with the starting pos
+     * @return the power to add for the object to stay up
+     */
+    public double calc(double deg) {
+        return Math.cos(Math.toRadians(deg)) * KG;
     }
 
-    public double countsToDeg(int counts) {
-        return ((counts*360) / 288.0);
-    }
-
-    public double degToCounts(double deg) {
-        return ((deg*288) / 360.0);
-    }
-
-    public double convertRelativeToAbsolute(double deg) {
+    /**
+     * @param deg current deg
+     * @return current deg + starting deg
+     */
+    public double convertRelativeDegToAbsolute(double deg) {
         return deg + STARTING_DEG;
     }
 }

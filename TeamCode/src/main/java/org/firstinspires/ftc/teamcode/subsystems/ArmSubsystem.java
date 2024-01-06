@@ -7,8 +7,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.FeedForward;
+import org.firstinspires.ftc.teamcode.util.MathUtil;
 
 public class ArmSubsystem extends SubsystemBase {
+    private final int ARM_MOTOR_COUNTS = 288;
+
     private final MotorEx motor;
     private final FeedForward feedForward;
 
@@ -24,18 +27,18 @@ public class ArmSubsystem extends SubsystemBase {
         this.motor.setInverted(true);
 
         this.motor.setPositionCoefficient(0);
-        this.motor.setPositionTolerance(feedForward.degToCounts(1));
+        this.motor.setPositionTolerance(MathUtil.degToCounts(1, ARM_MOTOR_COUNTS));
     }
 
     public void moveMotor(double power) {
         telemetry.addData("KG", String.valueOf(power));
         this.motor.setRunMode(Motor.RunMode.RawPower);
-        this.motor.set(power + feedForward.calcFeedForward(getCurrentPositionDeg()));
+        this.motor.set(power + feedForward.calc(getCurrentPositionDeg()));
     }
 
     public void moveToPoint(double deg) {
         this.motor.setRunMode(Motor.RunMode.PositionControl);
-        this.motor.setTargetPosition((int) feedForward.degToCounts(deg));
+        this.motor.setTargetPosition((int) MathUtil.degToCounts(deg, ARM_MOTOR_COUNTS));
         this.motor.set(1);
     }
 
@@ -44,7 +47,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public double getCurrentPositionDeg() {
-        return feedForward.convertRelativeToAbsolute(feedForward.countsToDeg(this.motor.getCurrentPosition()));
+        return feedForward.convertRelativeDegToAbsolute(MathUtil.countsToDeg(this.motor.getCurrentPosition(), ARM_MOTOR_COUNTS));
     }
 
 
