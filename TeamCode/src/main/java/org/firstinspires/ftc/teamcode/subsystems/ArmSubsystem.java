@@ -19,7 +19,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public ArmSubsystem(HardwareMap hMap, Telemetry telemetry) {
         this.telemetry = telemetry;
-        this.feedForward = new FeedForward(0, -33.75);
+        this.feedForward = new FeedForward(0.3, -33.75);
 
         this.motor = new MotorEx(hMap, "arm_motor");
         this.motor.resetEncoder();
@@ -49,6 +49,4 @@ public class ArmSubsystem extends SubsystemBase {
     public double getCurrentPositionDeg() {
         return feedForward.convertRelativeDegToAbsolute(MathUtil.countsToDeg(this.motor.getCurrentPosition(), ARM_MOTOR_COUNTS));
     }
-
-
 }

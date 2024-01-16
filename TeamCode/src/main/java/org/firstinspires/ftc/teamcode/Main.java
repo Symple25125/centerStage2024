@@ -58,28 +58,10 @@ public class Main extends CommandOpMode {
 
     private void initDefaultCommands() {
         this.driveBase.setDefaultCommand(new ArcadeDriveCommand(this.driveBase, this.driverController));
-//        this.armSubsystem.setDefaultCommand(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
+        this.armSubsystem.setDefaultCommand(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
     }
 
     private void initButtons() {
-        actionController.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(() -> _tmp -= 0.01);
-
-        actionController.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(() -> _tmp += 0.01);
-
-        actionController.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(() -> _tmp += 0.001);
-
-        actionController.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(() -> _tmp -= 0.001);
-
-        actionController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(() -> _tmp = 0);
-
-        actionController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenPressed(() -> _tmp = 1);
-
         // remember to change to action controller
         driverController.getGamepadButton(GamepadKeys.Button.A)
                 .toggleWhenPressed(
