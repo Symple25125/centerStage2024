@@ -13,6 +13,10 @@ public class FeedForward {
         this.STARTING_DEG = startingDeg;
     }
 
+    public double getStartingDeg() {
+        return this.STARTING_DEG;
+    }
+
     /**
      * @param deg the current object deg with the starting pos
      * @return the power to add for the object to stay up

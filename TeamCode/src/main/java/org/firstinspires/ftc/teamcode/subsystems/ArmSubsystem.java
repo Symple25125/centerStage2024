@@ -14,32 +14,31 @@ public class ArmSubsystem extends SubsystemBase {
 
     private final MotorEx motor;
     private final FeedForward feedForward;
-
+    private static final double STARTING_DEG = -33.75;
     private final Telemetry telemetry;
 
     public ArmSubsystem(HardwareMap hMap, Telemetry telemetry) {
         this.telemetry = telemetry;
-        this.feedForward = new FeedForward(0.3, -33.75);
+        this.feedForward = new FeedForward(0.3, STARTING_DEG);
 
         this.motor = new MotorEx(hMap, "arm_motor");
         this.motor.resetEncoder();
 
         this.motor.setInverted(true);
+    }
 
-        this.motor.setPositionCoefficient(0);
-        this.motor.setPositionTolerance(MathUtil.degToCounts(1, ARM_MOTOR_COUNTS));
+    public void moveMotor(double power, boolean feedForward) {
+//        telemetry.addData("JOYSTICK POWER: ", String.valueOf(power));
+        this.motor.setRunMode(Motor.RunMode.RawPower);
+        double feedForwardPower = (feedForward ? this.feedForward.calc(getCurrentPositionDeg()) : 0);
+        double motorPower = power + feedForwardPower;
+//        telemetry.addData("POWER:", motorPower);
+//        telemetry.addData("FEED FORWARD POWER:", feedForwardPower);
+        this.motor.set(motorPower);
     }
 
     public void moveMotor(double power) {
-        telemetry.addData("KG", String.valueOf(power));
-        this.motor.setRunMode(Motor.RunMode.RawPower);
-        this.motor.set(power + feedForward.calc(getCurrentPositionDeg()));
-    }
-
-    public void moveToPoint(double deg) {
-        this.motor.setRunMode(Motor.RunMode.PositionControl);
-        this.motor.setTargetPosition((int) MathUtil.degToCounts(deg, ARM_MOTOR_COUNTS));
-        this.motor.set(1);
+        moveMotor(power, true);
     }
 
     public boolean isAtPosition() {
@@ -47,6 +46,17 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public double getCurrentPositionDeg() {
-        return feedForward.convertRelativeDegToAbsolute(MathUtil.countsToDeg(this.motor.getCurrentPosition(), ARM_MOTOR_COUNTS));
+        return this.feedForward.convertRelativeDegToAbsolute(MathUtil.countsToDeg(this.motor.getCurrentPosition(), ARM_MOTOR_COUNTS));
+    }
+
+    public enum ArmPositions {
+        TAKE(STARTING_DEG),
+        PLACE(120);
+
+        public final double deg;
+
+        ArmPositions(double deg) {
+            this.deg = deg;
+        }
     }
 }

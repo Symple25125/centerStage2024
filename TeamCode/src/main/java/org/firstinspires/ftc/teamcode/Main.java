@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.arm.ArmByJoystickCommand;
+import org.firstinspires.ftc.teamcode.commands.arm.MoveArmToPointWithPID;
 import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.OpenClawCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.ArcadeDriveCommand;
@@ -46,14 +47,11 @@ public class Main extends CommandOpMode {
         initButtons();
     }
 
-    private double _tmp;
-
     @Override
     public void run() {
         super.run();
         telemetry.addData("DEG", String.valueOf(this.armSubsystem.getCurrentPositionDeg()));
         telemetry.update();
-        this.armSubsystem.moveMotor(_tmp);
     }
 
     private void initDefaultCommands() {
@@ -63,11 +61,17 @@ public class Main extends CommandOpMode {
 
     private void initButtons() {
         // remember to change to action controller
-        driverController.getGamepadButton(GamepadKeys.Button.A)
+        this.driverController.getGamepadButton(GamepadKeys.Button.A)
                 .toggleWhenPressed(
                         new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PICKUP),
                         new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PUT)
                 );
+
+        this.actionController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenHeld(new MoveArmToPointWithPID(this.armSubsystem, ArmSubsystem.ArmPositions.TAKE));
+
+        this.actionController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                .whenHeld(new MoveArmToPointWithPID(this.armSubsystem, ArmSubsystem.ArmPositions.PLACE));
 
 //        actionController.getGamepadButton(GamepadKeys.Button.A)
 //                .toggleWhenPressed(
