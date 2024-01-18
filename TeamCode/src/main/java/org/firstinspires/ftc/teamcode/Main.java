@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.arm.ArmByJoystickCommand;
 import org.firstinspires.ftc.teamcode.commands.arm.MoveArmToPointWithPID;
+import org.firstinspires.ftc.teamcode.commands.claw.ClawStartPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.OpenClawCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.ArcadeDriveCommand;
@@ -38,9 +39,9 @@ public class Main extends CommandOpMode {
         this.actionController = new GamepadEx(gamepad2);
 
         this.driveBase = new DriveBaseSubsystem(hardwareMap);
-//        this.clawSubsystem = new ClawSubsystem(hardwareMap);
-        this.armSubsystem = new ArmSubsystem(hardwareMap, telemetry);
+        this.clawSubsystem = new ClawSubsystem(hardwareMap);
         this.jointSubsystem = new JointSubSystem(hardwareMap);
+        this.armSubsystem = new ArmSubsystem(hardwareMap, jointSubsystem);
 
 
         initDefaultCommands();
@@ -51,32 +52,53 @@ public class Main extends CommandOpMode {
     public void run() {
         super.run();
         telemetry.addData("DEG", String.valueOf(this.armSubsystem.getCurrentPositionDeg()));
+        telemetry.addData("CLAW ANGLE", String.valueOf(this.jointSubsystem.getClawJointAngle()));
+        telemetry.addData("KC", String.valueOf(ArmSubsystem.tempK));
         telemetry.update();
     }
 
     private void initDefaultCommands() {
         this.driveBase.setDefaultCommand(new ArcadeDriveCommand(this.driveBase, this.driverController));
         this.armSubsystem.setDefaultCommand(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
+        new ClawStartPositionCommand(this.clawSubsystem).schedule();
     }
 
     private void initButtons() {
         // remember to change to action controller
-        this.driverController.getGamepadButton(GamepadKeys.Button.A)
-                .toggleWhenPressed(
-                        new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PICKUP),
-                        new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PUT)
-                );
-
         this.actionController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenHeld(new MoveArmToPointWithPID(this.armSubsystem, ArmSubsystem.ArmPositions.TAKE));
 
         this.actionController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenHeld(new MoveArmToPointWithPID(this.armSubsystem, ArmSubsystem.ArmPositions.PLACE));
 
-//        actionController.getGamepadButton(GamepadKeys.Button.A)
-//                .toggleWhenPressed(
-//                        new CloseClawCommand(clawSubsystem),
-//                        new OpenClawCommand(clawSubsystem)
-//                );
+        this.actionController.getGamepadButton(GamepadKeys.Button.A)
+                .toggleWhenPressed(
+                        new CloseClawCommand(this.clawSubsystem),
+                        new OpenClawCommand(this.clawSubsystem)
+                );
+
+        this.actionController.getGamepadButton(GamepadKeys.Button.Y)
+                .toggleWhenPressed(
+                        new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PICKUP),
+                        new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PUT)
+                );
+
+        driverController.getGamepadButton(GamepadKeys.Button.A)
+                .whenPressed(() -> ArmSubsystem.tempK -= 0.01);
+
+        driverController.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(() -> ArmSubsystem.tempK += 0.01);
+
+        driverController.getGamepadButton(GamepadKeys.Button.X)
+                .whenPressed(() -> ArmSubsystem.tempK += 0.001);
+
+        driverController.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(() -> ArmSubsystem.tempK -= 0.001);
+
+        driverController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenPressed(() -> ArmSubsystem.tempK = 0);
+
+        driverController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                .whenPressed(() -> ArmSubsystem.tempK = 1);
     }
 }

@@ -13,13 +13,14 @@ public class ArmSubsystem extends SubsystemBase {
     private final int ARM_MOTOR_COUNTS = 288;
 
     private final MotorEx motor;
+    private final JointSubSystem jointSubSystem;
     private final FeedForward feedForward;
     private static final double STARTING_DEG = -33.75;
-    private final Telemetry telemetry;
+    public static double tempK = 0;
 
-    public ArmSubsystem(HardwareMap hMap, Telemetry telemetry) {
-        this.telemetry = telemetry;
+    public ArmSubsystem(HardwareMap hMap, JointSubSystem jointSubSystem) {
         this.feedForward = new FeedForward(0.3, STARTING_DEG);
+        this.jointSubSystem = jointSubSystem;
 
         this.motor = new MotorEx(hMap, "arm_motor");
         this.motor.resetEncoder();
@@ -30,7 +31,8 @@ public class ArmSubsystem extends SubsystemBase {
     public void moveMotor(double power, boolean feedForward) {
 //        telemetry.addData("JOYSTICK POWER: ", String.valueOf(power));
         this.motor.setRunMode(Motor.RunMode.RawPower);
-        double feedForwardPower = (feedForward ? this.feedForward.calc(getCurrentPositionDeg()) : 0);
+        double calcClawPower = Math.cos(Math.toRadians(this.jointSubSystem.getClawJointAngle() + this.getCurrentPositionDeg())) * tempK;
+        double feedForwardPower = (feedForward ? this.feedForward.calc(getCurrentPositionDeg()) + calcClawPower : 0);
         double motorPower = power + feedForwardPower;
 //        telemetry.addData("POWER:", motorPower);
 //        telemetry.addData("FEED FORWARD POWER:", feedForwardPower);
