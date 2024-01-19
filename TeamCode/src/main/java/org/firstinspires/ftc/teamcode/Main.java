@@ -2,13 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.arm.ArmByJoystickCommand;
 import org.firstinspires.ftc.teamcode.commands.arm.MoveArmToPointWithPID;
 import org.firstinspires.ftc.teamcode.commands.claw.ClawStartPositionCommand;
@@ -20,8 +17,6 @@ import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
-
-import java.util.Collections;
 
 @TeleOp(name ="test1")
 public class Main extends CommandOpMode {
@@ -53,7 +48,7 @@ public class Main extends CommandOpMode {
         super.run();
         telemetry.addData("DEG", String.valueOf(this.armSubsystem.getCurrentPositionDeg()));
         telemetry.addData("CLAW ANGLE", String.valueOf(this.jointSubsystem.getClawJointAngle()));
-        telemetry.addData("KC", String.valueOf(ArmSubsystem.tempK));
+        telemetry.addData("KC", String.valueOf(ArmSubsystem.KClawJoint));
         telemetry.update();
     }
 
@@ -83,22 +78,23 @@ public class Main extends CommandOpMode {
                         new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PUT)
                 );
 
+        //!!! temp code REMEMBER TO REMOVE !!!
         driverController.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(() -> ArmSubsystem.tempK -= 0.01);
+                .whenPressed(() -> ArmSubsystem.KClawJoint -= 0.01);
 
         driverController.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(() -> ArmSubsystem.tempK += 0.01);
+                .whenPressed(() -> ArmSubsystem.KClawJoint += 0.01);
 
         driverController.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(() -> ArmSubsystem.tempK += 0.001);
+                .whenPressed(() -> ArmSubsystem.KClawJoint += 0.001);
 
         driverController.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(() -> ArmSubsystem.tempK -= 0.001);
+                .whenPressed(() -> ArmSubsystem.KClawJoint -= 0.001);
 
         driverController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(() -> ArmSubsystem.tempK = 0);
+                .whenPressed(() -> ArmSubsystem.KClawJoint = 0);
 
         driverController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenPressed(() -> ArmSubsystem.tempK = 1);
+                .whenPressed(() -> ArmSubsystem.KClawJoint = 1);
     }
 }
