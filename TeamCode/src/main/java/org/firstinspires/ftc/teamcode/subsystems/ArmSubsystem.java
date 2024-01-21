@@ -15,7 +15,7 @@ public class ArmSubsystem extends SubsystemBase {
     private final JointSubSystem jointSubSystem;
     private final FeedForward feedForward;
     private static final double STARTING_DEG = -33.75;
-    public static double KClawJoint = 0;
+    public static double KClawJoint = 1.2;
 
     public ArmSubsystem(HardwareMap hMap, JointSubSystem jointSubSystem) {
         this.feedForward = new FeedForward(0.3, STARTING_DEG);
@@ -38,10 +38,10 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     private double calcCurrentFeedforward() {
-        double clawJointDeg = this.jointSubSystem.getClawJointAngle() + this.getCurrentPositionDeg();
-        double calcClawJointPower = Math.cos(Math.toRadians(clawJointDeg)) * KClawJoint;
+        double clawJointDeg = this.jointSubSystem.getClawJointAngle();
+        double calcClawJointPower = Math.abs(Math.cos(Math.toRadians(clawJointDeg))) * KClawJoint * -1;
 
-        double feedForwardPower = this.feedForward.calc(getCurrentPositionDeg()) + calcClawJointPower;
+        double feedForwardPower = this.feedForward.calc(getCurrentPositionDeg()) + (getCurrentPositionDeg() > 90 ? calcClawJointPower : 0);
 
         return feedForwardPower;
     }

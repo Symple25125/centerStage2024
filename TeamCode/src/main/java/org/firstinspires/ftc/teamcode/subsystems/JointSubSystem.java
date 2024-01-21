@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.util.FeedForward;
 
 public class JointSubSystem extends SubsystemBase {
     private final ServoEx servo;
-    private static final double OFFSET = 164;
+    private static final double OFFSET = 0;
     private static final double GEAR_RATIO = 90f / 72f;
 
     public JointSubSystem(HardwareMap hMap) {
@@ -28,8 +28,8 @@ public class JointSubSystem extends SubsystemBase {
 
     // in deg
     public enum JointPositions {
-        PICKUP(0),
-        PUT(64);
+        PICKUP(220),
+        PUT(145);
 
 
         public final double deg;

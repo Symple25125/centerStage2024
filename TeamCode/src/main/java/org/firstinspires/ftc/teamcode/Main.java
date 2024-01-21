@@ -56,6 +56,7 @@ public class Main extends CommandOpMode {
         this.driveBase.setDefaultCommand(new ArcadeDriveCommand(this.driveBase, this.driverController));
         this.armSubsystem.setDefaultCommand(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
         new ClawStartPositionCommand(this.clawSubsystem).schedule();
+        this.jointSubsystem.moveServo(JointSubSystem.JointPositions.PICKUP);
     }
 
     private void initButtons() {
@@ -77,24 +78,5 @@ public class Main extends CommandOpMode {
                         new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PICKUP),
                         new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PUT)
                 );
-
-        //!!! temp code REMEMBER TO REMOVE !!!
-        driverController.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(() -> ArmSubsystem.KClawJoint -= 0.01);
-
-        driverController.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(() -> ArmSubsystem.KClawJoint += 0.01);
-
-        driverController.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(() -> ArmSubsystem.KClawJoint += 0.001);
-
-        driverController.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(() -> ArmSubsystem.KClawJoint -= 0.001);
-
-        driverController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(() -> ArmSubsystem.KClawJoint = 0);
-
-        driverController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenPressed(() -> ArmSubsystem.KClawJoint = 1);
     }
 }

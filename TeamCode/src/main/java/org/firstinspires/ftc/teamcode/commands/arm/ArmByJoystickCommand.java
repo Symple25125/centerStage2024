@@ -17,6 +17,6 @@ public class ArmByJoystickCommand extends CommandBase {
 
     @Override
     public void execute() {
-        this.armSubsystem.moveMotor(-this.controller.getRightY() * 0.7);
+        this.armSubsystem.moveMotor(-this.controller.getRightY() * 0.5);
     }
 }
