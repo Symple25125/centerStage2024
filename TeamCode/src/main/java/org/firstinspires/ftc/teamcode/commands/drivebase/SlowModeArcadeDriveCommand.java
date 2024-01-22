@@ -4,19 +4,22 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
+import org.opencv.core.Mat;
 
-public class ArcadeDriveCommand extends CommandBase {
+public class SlowModeArcadeDriveCommand extends CommandBase {
     private final DriveBaseSubsystem driveBase;
     private final GamepadEx controller;
 
-    public ArcadeDriveCommand(DriveBaseSubsystem driveBase, GamepadEx controller) {
+    private final double SPEED_MODIFIER = 0.5;
+
+    public SlowModeArcadeDriveCommand(DriveBaseSubsystem driveBase, GamepadEx gamepad) {
         addRequirements(driveBase);
         this.driveBase = driveBase;
-        this.controller = controller;
+        this.controller = gamepad;
     }
 
     @Override
     public void execute() {
-        this.driveBase.moveWithJoyStickAndNormalize(this.controller, 1, 1);
+        this.driveBase.moveWithJoyStickAndNormalize(this.controller, SPEED_MODIFIER, 1);
     }
 }

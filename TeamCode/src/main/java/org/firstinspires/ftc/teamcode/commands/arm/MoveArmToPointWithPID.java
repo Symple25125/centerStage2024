@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.commands.arm;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PController;
 
@@ -10,14 +11,21 @@ public class MoveArmToPointWithPID extends CommandBase {
     private final PController pController;
     private final double point;
     private int timeFinished = 0;
+    private int maxFinish = 3;
 
-    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos) {
+    private static double Kp = 0.0075;
+
+    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos, double kp) {
         addRequirements(armSubsystem);
 
         this.armSubsystem = armSubsystem;
         this.point = pos.deg;
-        this.pController = new PController(0.05);
+        this.pController = new PController(kp);
         this.pController.setTolerance(1);
+    }
+
+    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos) {
+        this(armSubsystem, pos, Kp);
     }
 
     @Override
@@ -41,6 +49,6 @@ public class MoveArmToPointWithPID extends CommandBase {
         if(this.pController.atSetPoint()) this.timeFinished += 1;
             else this.timeFinished = 0;
 
-        return this.timeFinished >= 3;
+        return this.timeFinished >= maxFinish;
     }
 }

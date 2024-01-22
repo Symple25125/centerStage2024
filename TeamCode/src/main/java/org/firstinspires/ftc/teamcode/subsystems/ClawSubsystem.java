@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.util.Servos;
 
 public class ClawSubsystem extends SubsystemBase {
 
@@ -16,7 +17,7 @@ public class ClawSubsystem extends SubsystemBase {
     private static final double OFFSET = 285;
 
     public ClawSubsystem(HardwareMap hMap) {
-        this.servo = new SimpleServo(hMap, "claw_servo", 0, 360, AngleUnit.DEGREES);
+        this.servo = new SimpleServo(hMap, Servos.CLAW.id, 0, 360, AngleUnit.DEGREES);
     }
 
     public void openClaw() {
@@ -32,8 +33,8 @@ public class ClawSubsystem extends SubsystemBase {
     }
 
     public enum ClawPositions {
-        OPEN(-45),
-        CLOSE(0);
+        OPEN(-20),
+        CLOSE(3);
 
         public final double deg;
 
