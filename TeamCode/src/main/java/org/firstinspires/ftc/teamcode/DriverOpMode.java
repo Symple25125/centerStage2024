@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.commands.claw.ClawStartPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.OpenClawCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.ArcadeDriveCommand;
+import org.firstinspires.ftc.teamcode.commands.drivebase.FeedForwardDriveTestCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.MoveUnderCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.SlowModeArcadeDriveCommand;
 import org.firstinspires.ftc.teamcode.commands.joint.MoveJointToPosition;
@@ -22,8 +23,10 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
 
+import java.util.ArrayList;
+
 @TeleOp(name="Driver Mode")
-public class Main extends CommandOpMode {
+public class DriverOpMode extends CommandOpMode {
     private DriveBaseSubsystem driveBase;
     private ClawSubsystem clawSubsystem;
     private ArmSubsystem armSubsystem;
@@ -53,11 +56,15 @@ public class Main extends CommandOpMode {
         telemetry.addData("ARM ANGLE", String.valueOf(this.armSubsystem.getCurrentPositionDeg()));
         telemetry.addData("CLAW ANGLE", String.valueOf(this.jointSubsystem.getClawJointAngle()));
         telemetry.update();
-
+        ArrayList<Double> motorsVel = this.driveBase.getMotorsVelocity();
+        FtcDashboard.getInstance().getTelemetry().addData("Robot Left Motor Velocity", motorsVel.get(0));
+        FtcDashboard.getInstance().getTelemetry().addData("Robot Right Motor Velocity", motorsVel.get(1));
+        FtcDashboard.getInstance().getTelemetry().update();
     }
 
     private void initDefaultCommands() {
-        this.driveBase.setDefaultCommand(new ArcadeDriveCommand(this.driveBase, this.driverController));
+//        this.driveBase.setDefaultCommand(new ArcadeDriveCommand(this.driveBase, this.driverController));
+        this.driveBase.setDefaultCommand(new FeedForwardDriveTestCommand(this.driveBase));
         this.armSubsystem.setDefaultCommand(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
 
         // claw starting pos

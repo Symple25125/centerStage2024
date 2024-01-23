@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.util.Motors;
 
+import java.util.ArrayList;
+
 public class DriveBaseSubsystem extends SubsystemBase {
     private final MotorEx leftMotor, rightMotor;
     public DriveBaseSubsystem(final HardwareMap hMap) {
@@ -42,5 +44,12 @@ public class DriveBaseSubsystem extends SubsystemBase {
         }
 
         this.moveMotors(normalizedLeftSpeed, normalizedRightSpeed);
+    }
+
+    public ArrayList<Double> getMotorsVelocity() {
+        return new ArrayList<Double>() {{
+            add(DriveBaseSubsystem.this.leftMotor.getVelocity());
+            add(DriveBaseSubsystem.this.rightMotor.getVelocity());
+        }};
     }
 }
