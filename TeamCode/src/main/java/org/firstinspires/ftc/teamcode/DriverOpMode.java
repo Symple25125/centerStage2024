@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -18,12 +19,14 @@ import org.firstinspires.ftc.teamcode.commands.drivebase.FeedForwardDriveTestCom
 import org.firstinspires.ftc.teamcode.commands.drivebase.MoveUnderCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.SlowModeArcadeDriveCommand;
 import org.firstinspires.ftc.teamcode.commands.joint.MoveJointToPosition;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @TeleOp(name="Driver Mode")
 public class DriverOpMode extends CommandOpMode {
@@ -37,6 +40,8 @@ public class DriverOpMode extends CommandOpMode {
 
     @Override
     public void initialize() {
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         this.driverController = new GamepadEx(gamepad1);
         this.actionController = new GamepadEx(gamepad2);
 
@@ -55,11 +60,14 @@ public class DriverOpMode extends CommandOpMode {
         super.run();
         telemetry.addData("ARM ANGLE", String.valueOf(this.armSubsystem.getCurrentPositionDeg()));
         telemetry.addData("CLAW ANGLE", String.valueOf(this.jointSubsystem.getClawJointAngle()));
+        HashMap<String, Double> motorsVel = this.driveBase.getMotorsVelocity();
+        HashMap<String, Double> motorsAcc = this.driveBase.getMotorsAcceleration((MultipleTelemetry) telemetry);
+        double velAvg = (motorsVel.get("right") + motorsVel.get("left")) / 2;
+        double accAvg = (motorsAcc.get("right") + motorsAcc.get("left")) / 2;
+        telemetry.addData("Robot Motor Velocity", velAvg);
+        telemetry.addData("Robot Motor Acceleration", accAvg);
+        telemetry.addData("Ka", (FeedForwardDriveTestCommand.POWER - DriveConstants.kStatic - DriveConstants.kV * velAvg) / accAvg);
         telemetry.update();
-        ArrayList<Double> motorsVel = this.driveBase.getMotorsVelocity();
-        FtcDashboard.getInstance().getTelemetry().addData("Robot Left Motor Velocity", motorsVel.get(0));
-        FtcDashboard.getInstance().getTelemetry().addData("Robot Right Motor Velocity", motorsVel.get(1));
-        FtcDashboard.getInstance().getTelemetry().update();
     }
 
     private void initDefaultCommands() {
