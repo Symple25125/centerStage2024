@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.util.FeedForward;
 import org.firstinspires.ftc.teamcode.util.MathUtil;
 import org.firstinspires.ftc.teamcode.util.Motors;
 
+@Config
 public class ArmSubsystem extends SubsystemBase {
     private final int ARM_MOTOR_COUNTS = 288;
 
@@ -17,9 +19,10 @@ public class ArmSubsystem extends SubsystemBase {
     private final FeedForward feedForward;
     private static final double STARTING_DEG = -33.75;
     public static double KGClawJoint = 0.2;
+    public static double KG = 0.3;
 
     public ArmSubsystem(HardwareMap hMap, JointSubSystem jointSubSystem) {
-        this.feedForward = new FeedForward(0.3, STARTING_DEG);
+        this.feedForward = new FeedForward(KG, STARTING_DEG);
         this.jointSubSystem = jointSubSystem;
 
         this.motor = new MotorEx(hMap, Motors.ARM.id);
@@ -40,6 +43,7 @@ public class ArmSubsystem extends SubsystemBase {
         double calcClawJointPower = Math.abs(Math.cos(Math.toRadians(clawJointDeg))) * KGClawJoint * -1;
 
         return this.feedForward.calc(getCurrentPositionDeg()) + (getCurrentPositionDeg() > 90 ? calcClawJointPower : 0);
+//        return this.feedForward.calc(getCurrentPositionDeg());
     }
 
     public void moveMotor(double power) {
@@ -51,7 +55,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public enum ArmPositions {
-        TAKE(STARTING_DEG),
+        TAKE(STARTING_DEG-15),
         PLACE(110),
 
         UNDER_DRIVE_DOWN(-15),

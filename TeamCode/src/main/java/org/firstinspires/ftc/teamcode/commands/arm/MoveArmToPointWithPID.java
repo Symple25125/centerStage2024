@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.controller.PController;
 
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 
+@Config
 public class MoveArmToPointWithPID extends CommandBase {
     private final ArmSubsystem armSubsystem;
     private final PController pController;

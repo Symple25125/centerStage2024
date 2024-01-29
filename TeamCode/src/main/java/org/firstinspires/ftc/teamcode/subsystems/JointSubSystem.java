@@ -28,8 +28,8 @@ public class JointSubSystem extends SubsystemBase {
 
     // in deg
     public enum JointPositions {
-        PICKUP(75),
-        PUT(0);
+        PICKUP(65),
+        PUT(15);
 
 
         public final double deg;

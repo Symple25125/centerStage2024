@@ -20,4 +20,12 @@ public class FeedForwardDriveTestCommand extends CommandBase {
     public void execute() {
         this.driveBase.moveMotors(POWER, POWER);
     }
+
+    public static void setFullPower() {
+        POWER = 1;
+    }
+
+    public static void setZeroPower() {
+        POWER = 0;
+    }
 }

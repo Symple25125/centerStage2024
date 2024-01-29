@@ -44,9 +44,9 @@ public class DriveConstants {
      * angular distances although most angular parameters are wrapped in Math.toRadians() for
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
-    public static double WHEEL_RADIUS = 1.77165354; // in
+    public static double WHEEL_RADIUS = 0.045; // m
     public static double GEAR_RATIO = 1/20f; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 13.8976378; // in
+    public static double TRACK_WIDTH = 0.353; // m
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -54,9 +54,10 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 0.68199728;
-    public static double kA = 0.06;
-    public static double kStatic = 0.07;
+//    public static double kV = 0.68199728;
+    public static double kV = 0.8;
+    public static double kA = 0.0041298367814143035;
+    public static double kStatic = 0.0822;
 
     /*
      * These values are used to generate the trajectories for you robot. To ensure proper operation,
@@ -65,8 +66,10 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static double MAX_VEL = 30;
-    public static double MAX_ACCEL = 30;
+
+     //                                                                                         To not give the full value
+    public static double MAX_VEL = (MAX_RPM / 60f) * GEAR_RATIO * WHEEL_RADIUS * 2 * Math.PI  * 0.8;
+    public static double MAX_ACCEL = MAX_VEL;
     public static double MAX_ANG_VEL = Math.toRadians(60);
     public static double MAX_ANG_ACCEL = Math.toRadians(60);
 
@@ -76,7 +79,7 @@ public class DriveConstants {
     public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR =
             RevHubOrientationOnRobot.LogoFacingDirection.UP;
     public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR =
-            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+            RevHubOrientationOnRobot.UsbFacingDirection.RIGHT;
 
 
     public static double encoderTicksToInches(double ticks) {

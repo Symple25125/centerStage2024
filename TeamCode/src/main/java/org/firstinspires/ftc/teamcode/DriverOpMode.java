@@ -15,18 +15,15 @@ import org.firstinspires.ftc.teamcode.commands.claw.ClawStartPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.OpenClawCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.ArcadeDriveCommand;
-import org.firstinspires.ftc.teamcode.commands.drivebase.FeedForwardDriveTestCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.MoveUnderCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.SlowModeArcadeDriveCommand;
+import org.firstinspires.ftc.teamcode.commands.hook.JoyStickHookCommand;
 import org.firstinspires.ftc.teamcode.commands.joint.MoveJointToPosition;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.HookSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 @TeleOp(name="Driver Mode")
 public class DriverOpMode extends CommandOpMode {
@@ -34,6 +31,7 @@ public class DriverOpMode extends CommandOpMode {
     private ClawSubsystem clawSubsystem;
     private ArmSubsystem armSubsystem;
     private JointSubSystem jointSubsystem;
+    private HookSubsystem hookSubsystem;
 
     private GamepadEx driverController;
     private GamepadEx actionController;
@@ -49,6 +47,7 @@ public class DriverOpMode extends CommandOpMode {
         this.clawSubsystem = new ClawSubsystem(hardwareMap);
         this.jointSubsystem = new JointSubSystem(hardwareMap);
         this.armSubsystem = new ArmSubsystem(hardwareMap, jointSubsystem);
+        this.hookSubsystem = new HookSubsystem(hardwareMap);
 
 
         initDefaultCommands();
@@ -60,20 +59,13 @@ public class DriverOpMode extends CommandOpMode {
         super.run();
         telemetry.addData("ARM ANGLE", String.valueOf(this.armSubsystem.getCurrentPositionDeg()));
         telemetry.addData("CLAW ANGLE", String.valueOf(this.jointSubsystem.getClawJointAngle()));
-        HashMap<String, Double> motorsVel = this.driveBase.getMotorsVelocity();
-        HashMap<String, Double> motorsAcc = this.driveBase.getMotorsAcceleration((MultipleTelemetry) telemetry);
-        double velAvg = (motorsVel.get("right") + motorsVel.get("left")) / 2;
-        double accAvg = (motorsAcc.get("right") + motorsAcc.get("left")) / 2;
-        telemetry.addData("Robot Motor Velocity", velAvg);
-        telemetry.addData("Robot Motor Acceleration", accAvg);
-        telemetry.addData("Ka", (FeedForwardDriveTestCommand.POWER - DriveConstants.kStatic - DriveConstants.kV * velAvg) / accAvg);
         telemetry.update();
     }
 
     private void initDefaultCommands() {
-//        this.driveBase.setDefaultCommand(new ArcadeDriveCommand(this.driveBase, this.driverController));
-        this.driveBase.setDefaultCommand(new FeedForwardDriveTestCommand(this.driveBase));
+        this.driveBase.setDefaultCommand(new ArcadeDriveCommand(this.driveBase, this.driverController));
         this.armSubsystem.setDefaultCommand(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
+        this.hookSubsystem.setDefaultCommand(new JoyStickHookCommand(this.hookSubsystem, this.actionController));
 
         // claw starting pos
         new ClawStartPositionCommand(this.clawSubsystem).schedule();
@@ -86,8 +78,11 @@ public class DriverOpMode extends CommandOpMode {
                         new ArcadeDriveCommand(this.driveBase, this.driverController),
                         new SlowModeArcadeDriveCommand(this.driveBase, this.driverController)
                 );
+
         this.driverController.getGamepadButton(GamepadKeys.Button.X)
-                .whenHeld(new MoveUnderCommand(this.armSubsystem, this.driveBase));
+                .whenHeld(new MoveUnderCommand(this.armSubsystem, this.driveBase, this.jointSubsystem));
+
+
 
         this.actionController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenHeld(new ParallelCommandGroup(

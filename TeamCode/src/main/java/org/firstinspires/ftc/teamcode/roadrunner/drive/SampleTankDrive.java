@@ -21,6 +21,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -32,6 +33,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySe
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.roadrunner.trajectorysequence.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.roadrunner.util.LynxModuleUtil;
+import org.firstinspires.ftc.teamcode.util.Motors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +51,8 @@ public class SampleTankDrive extends TankDrive {
     public static double VX_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
+    private DcMotorEx leftMotor;
+    private DcMotorEx rightMotor;
     private TrajectorySequenceRunner trajectorySequenceRunner;
 
     private static final TrajectoryVelocityConstraint VEL_CONSTRAINT = getVelocityConstraint(DriveConstants.MAX_VEL, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH);
@@ -56,7 +60,6 @@ public class SampleTankDrive extends TankDrive {
 
     private TrajectoryFollower follower;
 
-    private List<DcMotorEx> motors, leftMotors, rightMotors;
     private IMU imu;
 
     private VoltageSensor batteryVoltageSensor;
@@ -82,20 +85,20 @@ public class SampleTankDrive extends TankDrive {
         imu.initialize(parameters);
 
         // add/remove motors depending on your robot (e.g., 6WD)
-        DcMotorEx leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        DcMotorEx leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        DcMotorEx rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-        DcMotorEx rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        DcMotorEx leftMotor = hardwareMap.get(DcMotorEx.class, Motors.LEFT_LEG.id);
+        DcMotorEx rightMotor = hardwareMap.get(DcMotorEx.class, Motors.RIGHT_LEG.id);
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
-        leftMotors = Arrays.asList(leftFront, leftRear);
-        rightMotors = Arrays.asList(rightFront, rightRear);
+        MotorConfigurationType motorConfigurationType = leftMotor.getMotorType().clone();
+        motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+        leftMotor.setMotorType(motorConfigurationType);
 
-        for (DcMotorEx motor : motors) {
-            MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
-            motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
-            motor.setMotorType(motorConfigurationType);
-        }
+        MotorConfigurationType rightMotorConfigurationType = rightMotor.getMotorType().clone();
+        rightMotorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+        rightMotor.setMotorType(rightMotorConfigurationType);
+
+        this.rightMotor = rightMotor;
+        this.leftMotor = leftMotor;
 
         if (DriveConstants.RUN_USING_ENCODER) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -194,15 +197,13 @@ public class SampleTankDrive extends TankDrive {
     }
 
     public void setMode(DcMotor.RunMode runMode) {
-        for (DcMotorEx motor : motors) {
-            motor.setMode(runMode);
-        }
+            this.leftMotor.setMode(runMode);
+            this.rightMotor.setMode(runMode);
     }
 
     public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
-        for (DcMotorEx motor : motors) {
-            motor.setZeroPowerBehavior(zeroPowerBehavior);
-        }
+        this.rightMotor.setZeroPowerBehavior(zeroPowerBehavior);
+        this.leftMotor.setZeroPowerBehavior(zeroPowerBehavior);
     }
 
     public void setPIDFCoefficients(DcMotor.RunMode runMode, PIDFCoefficients coefficients) {
@@ -210,9 +211,8 @@ public class SampleTankDrive extends TankDrive {
                 coefficients.p, coefficients.i, coefficients.d,
                 coefficients.f * 12 / batteryVoltageSensor.getVoltage()
         );
-        for (DcMotorEx motor : motors) {
-            motor.setPIDFCoefficients(runMode, compensatedCoefficients);
-        }
+        this.leftMotor.setPIDFCoefficients(runMode, compensatedCoefficients);
+        this.rightMotor.setPIDFCoefficients(runMode, compensatedCoefficients);
     }
 
     public void setWeightedDrivePower(Pose2d drivePower) {
@@ -239,35 +239,22 @@ public class SampleTankDrive extends TankDrive {
     @NonNull
     @Override
     public List<Double> getWheelPositions() {
-        double leftSum = 0, rightSum = 0;
-        for (DcMotorEx leftMotor : leftMotors) {
-            leftSum += DriveConstants.encoderTicksToInches(leftMotor.getCurrentPosition());
-        }
-        for (DcMotorEx rightMotor : rightMotors) {
-            rightSum += DriveConstants.encoderTicksToInches(rightMotor.getCurrentPosition());
-        }
-        return Arrays.asList(leftSum / leftMotors.size(), rightSum / rightMotors.size());
+        double leftSum = DriveConstants.encoderTicksToInches(this.leftMotor.getCurrentPosition());
+        double rightSum = DriveConstants.encoderTicksToInches(this.rightMotor.getCurrentPosition());
+
+        return Arrays.asList(leftSum, rightSum);
     }
 
     public List<Double> getWheelVelocities() {
-        double leftSum = 0, rightSum = 0;
-        for (DcMotorEx leftMotor : leftMotors) {
-            leftSum += DriveConstants.encoderTicksToInches(leftMotor.getVelocity());
-        }
-        for (DcMotorEx rightMotor : rightMotors) {
-            rightSum += DriveConstants.encoderTicksToInches(rightMotor.getVelocity());
-        }
-        return Arrays.asList(leftSum / leftMotors.size(), rightSum / rightMotors.size());
+        double leftSum = DriveConstants.encoderTicksToInches(this.leftMotor.getVelocity());
+        double rightSum = DriveConstants.encoderTicksToInches(this.rightMotor.getVelocity());
+        return Arrays.asList(leftSum, rightSum);
     }
 
     @Override
     public void setMotorPowers(double v, double v1) {
-        for (DcMotorEx leftMotor : leftMotors) {
-            leftMotor.setPower(v);
-        }
-        for (DcMotorEx rightMotor : rightMotors) {
-            rightMotor.setPower(v1);
-        }
+        this.leftMotor.setPower(v);
+        this.rightMotor.setPower(v1);
     }
 
     @Override
