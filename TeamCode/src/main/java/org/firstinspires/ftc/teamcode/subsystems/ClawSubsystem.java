@@ -32,9 +32,18 @@ public class ClawSubsystem extends SubsystemBase {
         servo.turnToAngle(clawPositions.deg);
     }
 
+    public void moveClawToAngle(double deg) {
+        servo.turnToAngle(deg);
+    }
+
+    public double getClawDeg() {
+        return servo.getAngle();
+    }
+
     public enum ClawPositions {
         OPEN(-20),
-        CLOSE(3);
+        CLOSE(6),
+        BIG_OPEN(-65);
 
         public final double deg;
 

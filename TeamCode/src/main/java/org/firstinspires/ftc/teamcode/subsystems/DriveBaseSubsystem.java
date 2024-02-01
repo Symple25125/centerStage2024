@@ -14,12 +14,18 @@ import java.util.HashMap;
 
 public class DriveBaseSubsystem extends SubsystemBase {
 
-    public static final double MAX_RPM = 6000;
-    public static final double TICK_PER_REV = 28;
-    public static final double GEAR_RATIO = 20/1;
-    public static final double WHEEL_RADIUS = 0.045;
-    public static final double METERS_PER_REV = (Math.PI * 2) * WHEEL_RADIUS;
-    public static final double METERS_PER_TICK = (METERS_PER_REV / (TICK_PER_REV * GEAR_RATIO));
+//    public static final double MAX_RPM = Motors.RIGHT_LEG.maxRPM;
+//    public static final double TICK_PER_REV = Motors.RIGHT_LEG.ticksPerRev;
+//    public static final double GEAR_RATIO = Motors.RIGHT_LEG.gearRatio;
+//    public static final double WHEEL_RADIUS = 0.045;
+//    public static final double METERS_PER_REV = (Math.PI * 2) * WHEEL_RADIUS;
+//    public static final double METERS_PER_TICK = (METERS_PER_REV / (TICK_PER_REV * GEAR_RATIO));
+    public static final double SLOW_SPEED_MODIFIER = 0.5;
+    public static final double NORMAL_SPEED_MODIFIER = 1;
+    public static double LINER_SPEED_MODIFIER = 1;
+    public static double TURN_SPEED_MODIFIER = 1;
+    public static boolean INVERT = false;
+
 
     private final MotorEx leftMotor, rightMotor;
     public DriveBaseSubsystem(final HardwareMap hMap) {
@@ -33,9 +39,9 @@ public class DriveBaseSubsystem extends SubsystemBase {
         rightMotor.set(rightPower);
     }
 
-    public void moveWithJoyStickAndNormalize(GamepadEx controller, double linerModifier, double turnModifier) {
-        double rotationSpeed = controller.getRightX() * 0.5f * turnModifier;
-        double linerSpeed = controller.getLeftY() * 0.8f * linerModifier;
+    public void moveWithJoyStickAndNormalize(GamepadEx controller) {
+        double rotationSpeed = controller.getRightX() * 0.5f * TURN_SPEED_MODIFIER * (INVERT ? -1 : 1);
+        double linerSpeed = controller.getLeftY() * 0.8f * LINER_SPEED_MODIFIER * (INVERT ? -1 : 1);
 
         double rawLeftSpeed = (linerSpeed + rotationSpeed);
         double rawRightSpeed = (linerSpeed - rotationSpeed);
@@ -56,27 +62,16 @@ public class DriveBaseSubsystem extends SubsystemBase {
         this.moveMotors(normalizedLeftSpeed, normalizedRightSpeed);
     }
 
-    public HashMap<String, Double> getMotorsVelocity() {
-        HashMap<String, Double> vels = new HashMap<>();
-
-        double leftVel = this.leftMotor.getVelocity() * METERS_PER_TICK;
-        double rightVel = this.rightMotor.getVelocity() * METERS_PER_TICK;
-
-        vels.put("left", leftVel);
-        vels.put("right", rightVel);
-        return vels;
+    public void changeSpeedModifier(double modifier) {
+        changeSpeedModifier(modifier, modifier);
     }
 
-    public HashMap<String, Double> getMotorsAcceleration(MultipleTelemetry telemetry) {
-        HashMap<String, Double> acc = new HashMap<>();
-        
-        double leftAcc = this.leftMotor.getAcceleration() * METERS_PER_TICK;
-        double rightAcc = this.rightMotor.getAcceleration() * METERS_PER_TICK;
-        telemetry.addData("leftAcc", leftAcc);
-        telemetry.addData("rightAcc", rightAcc);
-        acc.put("left", leftAcc);
-        acc.put("right", rightAcc);
+    public void changeSpeedModifier(double linerModifier, double turnModifier) {
+        LINER_SPEED_MODIFIER = linerModifier;
+        TURN_SPEED_MODIFIER = turnModifier;
+    }
 
-        return acc;
+    public void setInverted(boolean invert) {
+        INVERT = invert;
     }
 }

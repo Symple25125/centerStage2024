@@ -12,9 +12,9 @@ public class MoveArmToPointWithPID extends CommandBase {
     private final PController pController;
     private final double point;
     private int timeFinished = 0;
-    private int maxFinish = 3;
+    private final int MAX_FINSHES = 3;
 
-    private static double Kp = 0.0075;
+    private static final double Kp = 0.0075;
 
     public MoveArmToPointWithPID(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos, double kp) {
         addRequirements(armSubsystem);
@@ -31,6 +31,7 @@ public class MoveArmToPointWithPID extends CommandBase {
 
     @Override
     public void initialize() {
+        this.timeFinished = 0;
         this.pController.setSetPoint(this.point);
     }
 
@@ -47,9 +48,12 @@ public class MoveArmToPointWithPID extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if(this.pController.atSetPoint()) this.timeFinished += 1;
-            else this.timeFinished = 0;
+        if(this.pController.atSetPoint()) {
+            this.timeFinished += 1;
+        } else {
+            this.timeFinished = 0;
+        }
 
-        return this.timeFinished >= maxFinish;
+        return this.timeFinished >= MAX_FINSHES;
     }
 }

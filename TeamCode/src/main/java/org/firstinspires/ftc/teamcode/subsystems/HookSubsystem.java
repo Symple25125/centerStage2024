@@ -16,4 +16,6 @@ public class HookSubsystem extends SubsystemBase {
     public void moveMotor(double power) {
         this.motor.set(power);
     }
+
+
 }

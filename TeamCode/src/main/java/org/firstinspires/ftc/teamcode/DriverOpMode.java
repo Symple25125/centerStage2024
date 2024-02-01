@@ -4,7 +4,9 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -13,11 +15,13 @@ import org.firstinspires.ftc.teamcode.commands.arm.ArmByJoystickCommand;
 import org.firstinspires.ftc.teamcode.commands.arm.MoveArmToPointWithPID;
 import org.firstinspires.ftc.teamcode.commands.claw.ClawStartPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
+import org.firstinspires.ftc.teamcode.commands.claw.MoveClawToPositionSlowCommand;
+import org.firstinspires.ftc.teamcode.commands.claw.OpenBigClawCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.OpenClawCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.ArcadeDriveCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.MoveUnderCommand;
-import org.firstinspires.ftc.teamcode.commands.drivebase.SlowModeArcadeDriveCommand;
 import org.firstinspires.ftc.teamcode.commands.hook.JoyStickHookCommand;
+import org.firstinspires.ftc.teamcode.commands.hook.MoveToHookPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.joint.MoveJointToPosition;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
@@ -68,21 +72,28 @@ public class DriverOpMode extends CommandOpMode {
         this.hookSubsystem.setDefaultCommand(new JoyStickHookCommand(this.hookSubsystem, this.actionController));
 
         // claw starting pos
-        new ClawStartPositionCommand(this.clawSubsystem).schedule();
-        this.jointSubsystem.moveServo(JointSubSystem.JointPositions.PICKUP);
+//        new ClawStartPositionCommand(this.clawSubsystem).schedule();
+//        this.jointSubsystem.moveServo(JointSubSystem.JointPositions.PICKUP);
     }
 
     private void initButtons() {
+        this.driverController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                .toggleWhenPressed(
+                        new InstantCommand(() -> this.driveBase.changeSpeedModifier(DriveBaseSubsystem.SLOW_SPEED_MODIFIER)),
+                        new InstantCommand(() -> this.driveBase.changeSpeedModifier(DriveBaseSubsystem.NORMAL_SPEED_MODIFIER))
+                );
+
         this.driverController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .toggleWhenPressed(
-                        new ArcadeDriveCommand(this.driveBase, this.driverController),
-                        new SlowModeArcadeDriveCommand(this.driveBase, this.driverController)
+                        new InstantCommand(() -> this.driveBase.setInverted(true)),
+                        new InstantCommand(() -> this.driveBase.setInverted(false))
                 );
 
         this.driverController.getGamepadButton(GamepadKeys.Button.X)
                 .whenHeld(new MoveUnderCommand(this.armSubsystem, this.driveBase, this.jointSubsystem));
 
-
+        this.driverController.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(new InstantCommand(() -> this.armSubsystem.resetPos()));
 
         this.actionController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenHeld(new ParallelCommandGroup(
@@ -101,5 +112,16 @@ public class DriverOpMode extends CommandOpMode {
                         new CloseClawCommand(this.clawSubsystem),
                         new OpenClawCommand(this.clawSubsystem)
                 );
+
+        this.actionController.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(new MoveToHookPositionCommand(this.armSubsystem, this.jointSubsystem));
+
+        this.actionController.getGamepadButton(GamepadKeys.Button.B)
+                .toggleWhenPressed(
+                        new OpenBigClawCommand(this.clawSubsystem, ClawSubsystem.ClawPositions.BIG_OPEN),
+                        new MoveClawToPositionSlowCommand(this.clawSubsystem, ClawSubsystem.ClawPositions.CLOSE)
+                );
+
+        new Trigger(() -> Math.abs(this.actionController.getRightY()) > 0.1).whileActiveOnce(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
     }
 }

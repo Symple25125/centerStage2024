@@ -12,8 +12,6 @@ import org.firstinspires.ftc.teamcode.util.Motors;
 
 @Config
 public class ArmSubsystem extends SubsystemBase {
-    private final int ARM_MOTOR_COUNTS = 288;
-
     private final MotorEx motor;
     private final JointSubSystem jointSubSystem;
     private final FeedForward feedForward;
@@ -51,15 +49,18 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public double getCurrentPositionDeg() {
-        return this.feedForward.convertRelativeDegToAbsolute(MathUtil.countsToDeg(this.motor.getCurrentPosition(), ARM_MOTOR_COUNTS));
+        return this.feedForward.convertRelativeDegToAbsolute(MathUtil.countsToDeg(this.motor.getCurrentPosition(), Motors.ARM.ticksPerRev));
+    }
+
+    public void resetPos() {
+        this.motor.resetEncoder();
     }
 
     public enum ArmPositions {
         TAKE(STARTING_DEG-15),
-        PLACE(110),
-
-        UNDER_DRIVE_DOWN(-15),
-        UNDER_DRIVE_UP(55);
+        PLACE(120),
+        FOLD(STARTING_DEG-15),
+        HOOK(90);
 
         public final double deg;
 

@@ -17,6 +17,6 @@ public class ArcadeDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        this.driveBase.moveWithJoyStickAndNormalize(this.controller, 1, 1);
+        this.driveBase.moveWithJoyStickAndNormalize(this.controller);
     }
 }
