@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -11,10 +12,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.util.Servos;
 
+@Config
 public class ClawSubsystem extends SubsystemBase {
 
     private final ServoEx servo;
-    private static final double OFFSET = 285;
+    private static final double OFFSET = 0;
 
     public ClawSubsystem(HardwareMap hMap) {
         this.servo = new SimpleServo(hMap, Servos.CLAW.id, 0, 360, AngleUnit.DEGREES);
@@ -37,13 +39,13 @@ public class ClawSubsystem extends SubsystemBase {
     }
 
     public double getClawDeg() {
-        return servo.getAngle();
+        return servo.getAngle() + OFFSET;
     }
 
     public enum ClawPositions {
-        OPEN(-20),
-        CLOSE(6),
-        BIG_OPEN(-65);
+        OPEN(90),
+        CLOSE(140),
+        FULL_OPEN(45);
 
         public final double deg;
 

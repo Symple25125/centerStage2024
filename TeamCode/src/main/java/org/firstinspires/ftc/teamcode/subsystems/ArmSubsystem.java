@@ -15,9 +15,9 @@ public class ArmSubsystem extends SubsystemBase {
     private final MotorEx motor;
     private final JointSubSystem jointSubSystem;
     private final FeedForward feedForward;
-    private static final double STARTING_DEG = -33.75;
-    public static double KGClawJoint = 0.2;
-    public static double KG = 0.3;
+    public static final double STARTING_DEG = -33.75;
+    public static double KG = 0.27;
+    public static double GravitationalZeroDeg = 90;
 
     public ArmSubsystem(HardwareMap hMap, JointSubSystem jointSubSystem) {
         this.feedForward = new FeedForward(KG, STARTING_DEG);
@@ -36,12 +36,8 @@ public class ArmSubsystem extends SubsystemBase {
         this.motor.set(motorPower);
     }
 
-    private double calcCurrentFeedforward() {
-        double clawJointDeg = this.jointSubSystem.getClawJointAngle();
-        double calcClawJointPower = Math.abs(Math.cos(Math.toRadians(clawJointDeg))) * KGClawJoint * -1;
-
-        return this.feedForward.calc(getCurrentPositionDeg()) + (getCurrentPositionDeg() > 90 ? calcClawJointPower : 0);
-//        return this.feedForward.calc(getCurrentPositionDeg());
+    public double calcCurrentFeedforward() {
+        return this.feedForward.calc(getCurrentPositionDeg(), GravitationalZeroDeg);
     }
 
     public void moveMotor(double power) {
@@ -52,13 +48,17 @@ public class ArmSubsystem extends SubsystemBase {
         return this.feedForward.convertRelativeDegToAbsolute(MathUtil.countsToDeg(this.motor.getCurrentPosition(), Motors.ARM.ticksPerRev));
     }
 
+    public double getSpeed() {
+        return this.motor.get();
+    }
+
     public void resetPos() {
         this.motor.resetEncoder();
     }
 
     public enum ArmPositions {
         TAKE(STARTING_DEG-15),
-        PLACE(120),
+        PLACE(145),
         FOLD(STARTING_DEG-15),
         HOOK(90);
 

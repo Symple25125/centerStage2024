@@ -5,9 +5,9 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 
-public class OpenBigClawCommand extends InstantCommand {
-    public OpenBigClawCommand(ClawSubsystem clawSubsystem, ClawSubsystem.ClawPositions clawPositions) {
-        super(() -> clawSubsystem.moveClawToPosition(clawPositions));
+public class FullyOpenClawCommand extends InstantCommand {
+    public FullyOpenClawCommand(ClawSubsystem clawSubsystem) {
+        super(() -> clawSubsystem.moveClawToPosition(ClawSubsystem.ClawPositions.FULL_OPEN));
         addRequirements(clawSubsystem);
     }
 }

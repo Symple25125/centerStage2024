@@ -21,8 +21,12 @@ public class FeedForward {
      * @param deg the current object deg with the starting pos
      * @return the power to add for the object to stay up
      */
+    public double calc(double deg, double OFFSET) {
+        return Math.cos(Math.toRadians(deg + OFFSET)) * KG;
+    }
+
     public double calc(double deg) {
-        return Math.cos(Math.toRadians(deg)) * KG;
+        return calc(deg, 0);
     }
 
     /**
