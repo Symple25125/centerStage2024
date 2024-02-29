@@ -7,15 +7,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.util.Motors;
 
 public class HookSubsystem extends SubsystemBase {
-    private final MotorEx motor;
+//    private final MotorEx motor;
 
     public HookSubsystem(HardwareMap hMap) {
-        this.motor = new MotorEx(hMap, Motors.CLAW_MOTOR.id);
+//        this.motor = new MotorEx(hMap, Motors.CLAW_MOTOR.id);
     }
 
     public void moveMotor(double power) {
-        this.motor.set(power);
+//        this.motor.set(power);
     }
-
-
 }

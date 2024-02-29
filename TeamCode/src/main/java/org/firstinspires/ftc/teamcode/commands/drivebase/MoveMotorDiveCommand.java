@@ -24,7 +24,7 @@ public class MoveMotorDiveCommand extends CommandBase {
     }
 
     public MoveMotorDiveCommand(DriveBaseSubsystem driveBase, long time, double leftPower, double rightPower) {
-        this(driveBase, time, leftPower, rightPower, TimeUnit.SECONDS);
+        this(driveBase, time, leftPower, rightPower, TimeUnit.MILLISECONDS);
     }
 
     @Override

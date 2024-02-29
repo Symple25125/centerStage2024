@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.util;
 
 public enum Motors {
-    ARM("arm_motor", 125, 288),
-    CLAW_MOTOR("claw_motor", 125, 288, 30/90f),
+    RIGHT_ARM("arm_motor_one", 125, 288),
+    LEFT_ARM("arm_motor_two", 125, 288),
+//    CLAW_MOTOR("claw_motor", 125, 288, 30/90f),
     LEFT_LEG("left_leg", 6000, 28, 20/1f),
     RIGHT_LEG("right_leg", 6000, 28, 20/1f);
 

@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -18,13 +19,16 @@ import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.OpenClawCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.ArcadeDriveCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.MoveUnderCommand;
+import org.firstinspires.ftc.teamcode.commands.drone.LaunchDroneCommand;
 import org.firstinspires.ftc.teamcode.commands.hook.AutoHookCloseCommand;
 import org.firstinspires.ftc.teamcode.commands.hook.JoyStickHookCommand;
+import org.firstinspires.ftc.teamcode.commands.hook.MoveHookMotorTimerCommand;
 import org.firstinspires.ftc.teamcode.commands.hook.MoveToHookPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.joint.MoveJointToPosition;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
+import org.firstinspires.ftc.teamcode.subsystems.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.HookSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
 
@@ -35,6 +39,7 @@ public class DriverOpMode extends CommandOpMode {
     private ArmSubsystem armSubsystem;
     private JointSubSystem jointSubsystem;
     private HookSubsystem hookSubsystem;
+    private DroneSubsystem droneSubsystem;
 
     private GamepadEx driverController;
     private GamepadEx actionController;
@@ -49,8 +54,9 @@ public class DriverOpMode extends CommandOpMode {
         this.driveBase = new DriveBaseSubsystem(hardwareMap);
         this.clawSubsystem = new ClawSubsystem(hardwareMap);
         this.jointSubsystem = new JointSubSystem(hardwareMap);
-        this.armSubsystem = new ArmSubsystem(hardwareMap, jointSubsystem);
+        this.armSubsystem = new ArmSubsystem(hardwareMap, false);
         this.hookSubsystem = new HookSubsystem(hardwareMap);
+        this.droneSubsystem = new DroneSubsystem(hardwareMap);
 
 
         initDefaultCommands();
@@ -113,13 +119,24 @@ public class DriverOpMode extends CommandOpMode {
                 );
 
         this.actionController.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(new MoveToHookPositionCommand(this.armSubsystem, this.jointSubsystem, this.clawSubsystem));
+                .whenPressed(
+                        new MoveToHookPositionCommand(this.armSubsystem, this.jointSubsystem, this.clawSubsystem)
+//                        new SequentialCommandGroup(
+//                            new MoveHookMotorTimerCommand(this.hookSubsystem, -1, 3700),
+//                            new MoveToHookPositionCommand(this.armSubsystem, this.jointSubsystem, this.clawSubsystem)
+//                        )
+                );
 
 
         this.actionController.getGamepadButton(GamepadKeys.Button.X)
                 .toggleWhenPressed(
                         new AutoHookCloseCommand(this.hookSubsystem, this.jointSubsystem),
                         new JoyStickHookCommand(this.hookSubsystem, this.actionController)
+                );
+
+        this.actionController.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(
+                        new LaunchDroneCommand(this.droneSubsystem)
                 );
 
         new Trigger(() -> Math.abs(this.actionController.getLeftY()) > 0.1).whenActive(new JoyStickHookCommand(this.hookSubsystem, this.actionController));
