@@ -11,39 +11,30 @@ public class MoveArmToPointWithPID extends CommandBase {
     protected final ArmSubsystem armSubsystem;
     protected final PController pController;
     private double point;
-    public static double Kp = 0.005;
-    protected boolean feedForward;
+    public static double DefaultKp = 0.01;
+    public double MAX_POWER = 0.8f;
 
-    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos, boolean feedForward, double kp) {
+    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos, double kp) {
         addRequirements(armSubsystem);
 
         this.armSubsystem = armSubsystem;
         this.point = pos.deg;
-        this.feedForward = feedForward;
         this.pController = new PController(kp);
         this.pController.setTolerance(1);
     }
 
-    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, double deg, boolean feedForward, double kp) {
-        this(armSubsystem, ArmSubsystem.ArmPositions.HOOK, feedForward, kp);
+    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, double deg, double kp) {
+        this(armSubsystem, ArmSubsystem.ArmPositions.HOOK, kp);
         this.point = deg;
     }
 
-    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos, boolean feedForward) {
-        this(armSubsystem, pos, feedForward, Kp);
-    }
-
-    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, double pos, boolean feedForward) {
-        this(armSubsystem, ArmSubsystem.ArmPositions.PLACE, feedForward, Kp);
-        this.point = pos;
-    }
-
     public MoveArmToPointWithPID(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos) {
-        this(armSubsystem, pos, true, Kp);
+        this(armSubsystem, pos, DefaultKp);
     }
 
     public MoveArmToPointWithPID(ArmSubsystem armSubsystem, double pos) {
-        this(armSubsystem, pos, true, Kp);
+        this(armSubsystem, ArmSubsystem.ArmPositions.PLACE, DefaultKp);
+        this.point = pos;
     }
 
     @Override
@@ -53,8 +44,11 @@ public class MoveArmToPointWithPID extends CommandBase {
 
     @Override
     public void execute() {
-        double power = pController.calculate(this.armSubsystem.getCurrentPositionDeg());
-        this.armSubsystem.moveMotor(power, feedForward);
+        double rawPower = pController.calculate(this.armSubsystem.getCurrentPos());
+
+        double power = Math.min(Math.max(rawPower, -MAX_POWER), MAX_POWER);
+
+        this.armSubsystem.moveMotor(power);
     }
 
     @Override

@@ -14,11 +14,10 @@ import org.firstinspires.ftc.teamcode.util.Servos;
 @Config
 public class JointSubSystem extends SubsystemBase {
     private final ServoEx servo;
-    private static final double GEAR_RATIO = 90f / 72f;
-    public static double OFFSET = 0;
+    public static final double OFFSET = 155;
 
     public JointSubSystem(HardwareMap hMap) {
-        this.servo = new SimpleServo(hMap, Servos.CLAW_JOINT.id, 0, 360, AngleUnit.DEGREES);
+        this.servo = new SimpleServo(hMap, Servos.CLAW_JOINT.id, OFFSET - 180, OFFSET + 180, AngleUnit.DEGREES);
     }
 
     public void moveServo(JointPositions position) {
@@ -29,17 +28,16 @@ public class JointSubSystem extends SubsystemBase {
         return servo.getAngle(AngleUnit.DEGREES);
     }
 
-    // in deg
     public enum JointPositions {
-        PICKUP(69),
-        PUT(0),
-        HOOK(280);
+        PICKUP(50),
+        PUT(165),
+        HOOK(-120);
 
 
         public final double deg;
 
         JointPositions(double deg) {
-            this.deg = (deg * GEAR_RATIO) - OFFSET;
+            this.deg = deg + OFFSET;
         }
     }
 }

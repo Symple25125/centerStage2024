@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.OpModes.teleop;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -15,21 +14,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.commands.arm.ArmByJoystickCommand;
 import org.firstinspires.ftc.teamcode.commands.arm.GoToPickupPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.arm.MoveArmToPointWithPID;
+import org.firstinspires.ftc.teamcode.commands.arm.RobotGoUpCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.OpenClawCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.ArcadeDriveCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.MoveUnderCommand;
 import org.firstinspires.ftc.teamcode.commands.drone.LaunchDroneCommand;
-import org.firstinspires.ftc.teamcode.commands.hook.AutoHookCloseCommand;
-import org.firstinspires.ftc.teamcode.commands.hook.JoyStickHookCommand;
-import org.firstinspires.ftc.teamcode.commands.hook.MoveHookMotorTimerCommand;
-import org.firstinspires.ftc.teamcode.commands.hook.MoveToHookPositionCommand;
+
 import org.firstinspires.ftc.teamcode.commands.joint.MoveJointToPosition;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DroneSubsystem;
-import org.firstinspires.ftc.teamcode.subsystems.HookSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
 
 @TeleOp(name="Driver Mode")
@@ -38,7 +34,6 @@ public class DriverOpMode extends CommandOpMode {
     private ClawSubsystem clawSubsystem;
     private ArmSubsystem armSubsystem;
     private JointSubSystem jointSubsystem;
-    private HookSubsystem hookSubsystem;
     private DroneSubsystem droneSubsystem;
 
     private GamepadEx driverController;
@@ -55,7 +50,6 @@ public class DriverOpMode extends CommandOpMode {
         this.clawSubsystem = new ClawSubsystem(hardwareMap);
         this.jointSubsystem = new JointSubSystem(hardwareMap);
         this.armSubsystem = new ArmSubsystem(hardwareMap, false);
-        this.hookSubsystem = new HookSubsystem(hardwareMap);
         this.droneSubsystem = new DroneSubsystem(hardwareMap);
 
 
@@ -66,19 +60,16 @@ public class DriverOpMode extends CommandOpMode {
     @Override
     public void run() {
         super.run();
-        telemetry.addData("ARM ANGLE", String.valueOf(this.armSubsystem.getCurrentPositionDeg()));
+        telemetry.addData("ARM ANGLE", String.valueOf(this.armSubsystem.getCurrentPos()));
         telemetry.addData("CLAW JOINT ANGLE", String.valueOf(this.jointSubsystem.getClawJointAngle()));
         telemetry.addData("CLAW ANGLE", String.valueOf(this.clawSubsystem.getClawDeg()));
         telemetry.addData("Arm Command", String.valueOf(this.armSubsystem.getCurrentCommand().getName()));
-        telemetry.addData("Arm FW", String.valueOf(this.armSubsystem.calcCurrentFeedforward()));
-        telemetry.addData("Arm SPEED", String.valueOf(this.armSubsystem.getSpeed()));
         telemetry.update();
     }
 
     private void initDefaultCommands() {
         this.driveBase.setDefaultCommand(new ArcadeDriveCommand(this.driveBase, this.driverController));
         this.armSubsystem.setDefaultCommand(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
-        this.hookSubsystem.setDefaultCommand(new JoyStickHookCommand(this.hookSubsystem, this.actionController));
     }
 
     protected void initButtons() {
@@ -96,6 +87,11 @@ public class DriverOpMode extends CommandOpMode {
 
         this.driverController.getGamepadButton(GamepadKeys.Button.X)
                 .whenHeld(new MoveUnderCommand(this.armSubsystem, this.driveBase, this.jointSubsystem));
+
+        this.driverController .getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(
+                        new LaunchDroneCommand(this.droneSubsystem)
+                );
 
 //        this.driverController.getGamepadButton(GamepadKeys.Button.B)
 //                .whenPressed(new InstantCommand(() -> this.armSubsystem.resetPos()));
@@ -120,26 +116,18 @@ public class DriverOpMode extends CommandOpMode {
 
         this.actionController.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(
-                        new MoveToHookPositionCommand(this.armSubsystem, this.jointSubsystem, this.clawSubsystem)
-//                        new SequentialCommandGroup(
-//                            new MoveHookMotorTimerCommand(this.hookSubsystem, -1, 3700),
-//                            new MoveToHookPositionCommand(this.armSubsystem, this.jointSubsystem, this.clawSubsystem)
-//                        )
+                        new ParallelCommandGroup(
+                                new MoveArmToPointWithPID(this.armSubsystem, ArmSubsystem.ArmPositions.HOOK),
+                                new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.HOOK)
+                        )
                 );
 
 
         this.actionController.getGamepadButton(GamepadKeys.Button.X)
                 .toggleWhenPressed(
-                        new AutoHookCloseCommand(this.hookSubsystem, this.jointSubsystem),
-                        new JoyStickHookCommand(this.hookSubsystem, this.actionController)
+                    new RobotGoUpCommand(this.armSubsystem)
                 );
 
-        this.actionController.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(
-                        new LaunchDroneCommand(this.droneSubsystem)
-                );
-
-        new Trigger(() -> Math.abs(this.actionController.getLeftY()) > 0.1).whenActive(new JoyStickHookCommand(this.hookSubsystem, this.actionController));
         new Trigger(() -> Math.abs(this.actionController.getRightY()) > 0.1).whenActive(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
     }
 }

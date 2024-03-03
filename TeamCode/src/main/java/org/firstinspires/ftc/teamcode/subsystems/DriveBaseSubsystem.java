@@ -15,11 +15,11 @@ import java.util.HashMap;
 public class DriveBaseSubsystem extends SubsystemBase {
 
 //    public static final double MAX_RPM = Motors.RIGHT_LEG.maxRPM;
-//    public static final double TICK_PER_REV = Motors.RIGHT_LEG.ticksPerRev;
-//    public static final double GEAR_RATIO = Motors.RIGHT_LEG.gearRatio;
-//    public static final double WHEEL_RADIUS = 0.045;
-//    public static final double METERS_PER_REV = (Math.PI * 2) * WHEEL_RADIUS;
-//    public static final double METERS_PER_TICK = (METERS_PER_REV / (TICK_PER_REV * GEAR_RATIO));
+    public static final double TICKS_PER_REV = Motors.RIGHT_LEG.ticksPerRev;
+    public static final double GEAR_RATIO = Motors.RIGHT_LEG.gearRatio;
+    public static final double WHEEL_RADIUS = 0.045;
+    public static final double METERS_PER_REV = (Math.PI * 2) * WHEEL_RADIUS;
+    public static final double METERS_PER_TICK = (METERS_PER_REV / (TICKS_PER_REV * GEAR_RATIO));
     public static final double SLOW_SPEED_MODIFIER = 0.5;
     public static final double NORMAL_SPEED_MODIFIER = 1;
     public static double LINER_SPEED_MODIFIER = 1;
@@ -37,6 +37,15 @@ public class DriveBaseSubsystem extends SubsystemBase {
     public void moveMotors(double leftPower, double rightPower) {
         leftMotor.set(leftPower);
         rightMotor.set(rightPower);
+    }
+
+    public double getMotorEncoderPos() {
+        return this.leftMotor.getCurrentPosition();
+    }
+
+    public double encoderTicksToCM(double ticks) {
+//        return (WHEEL_RADIUS * 2 * Math.PI) * GEAR_RATIO * (ticks / TICKS_PER_REV);
+        return ticks * (METERS_PER_TICK * 100);
     }
 
     public void moveWithJoyStickAndNormalize(GamepadEx controller) {

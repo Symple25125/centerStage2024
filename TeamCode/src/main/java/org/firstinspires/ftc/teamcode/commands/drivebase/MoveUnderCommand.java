@@ -14,7 +14,7 @@ public class MoveUnderCommand extends SequentialCommandGroup {
     public MoveUnderCommand(ArmSubsystem armSubsystem, DriveBaseSubsystem driveBase, JointSubSystem jointSubSystem) {
         addCommands(
                 new MoveJointToPosition(jointSubSystem, JointSubSystem.JointPositions.PUT),
-                new MoveArmToPointWithPID(armSubsystem, ArmSubsystem.ArmPositions.FOLD, true, 0.05)
+                new MoveArmToPointWithPID(armSubsystem, ArmSubsystem.ArmPositions.FOLD, 0.05)
 //                new MoveMotorDiveCommand(driveBase, 500, movePower, movePower, TimeUnit.MILLISECONDS),
 //                new MoveArmToPointWithPID(armSubsystem, ArmSubsystem.ArmPositions.UNDER_DRIVE_UP, 0.05),
 //                new MoveMotorDiveCommand(driveBase, 500, movePower, movePower, TimeUnit.MILLISECONDS)
