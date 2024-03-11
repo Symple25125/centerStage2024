@@ -6,6 +6,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -21,6 +23,8 @@ import org.firstinspires.ftc.teamcode.commands.drivebase.ArcadeDriveCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.MoveUnderCommand;
 import org.firstinspires.ftc.teamcode.commands.drone.LaunchDroneCommand;
 
+import org.firstinspires.ftc.teamcode.commands.joint.DisableJointCommand;
+import org.firstinspires.ftc.teamcode.commands.joint.EnableJointCommand;
 import org.firstinspires.ftc.teamcode.commands.joint.MoveJointToPosition;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
@@ -70,6 +74,8 @@ public class DriverOpMode extends CommandOpMode {
     private void initDefaultCommands() {
         this.driveBase.setDefaultCommand(new ArcadeDriveCommand(this.driveBase, this.driverController));
         this.armSubsystem.setDefaultCommand(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
+
+        new EnableJointCommand(this.jointSubsystem).schedule();
     }
 
     protected void initButtons() {
@@ -124,10 +130,29 @@ public class DriverOpMode extends CommandOpMode {
 
 
         this.actionController.getGamepadButton(GamepadKeys.Button.X)
-                .toggleWhenPressed(
-                    new RobotGoUpCommand(this.armSubsystem)
+                .whenPressed(
+                    new ParallelCommandGroup(
+                            new DisableJointCommand(this.jointSubsystem),
+                            new RobotGoUpCommand(this.armSubsystem)
+                    )
                 );
 
+
+
+        new Trigger(() -> this.actionController.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5f)
+                .whenActive(
+                        new ParallelCommandGroup(
+                                new GoToPickupPositionCommand(this.armSubsystem),
+                                new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PICKUP),
+                                new OpenClawCommand(this.clawSubsystem)
+                        )
+                )
+                .whenInactive(new SequentialCommandGroup(
+                        new CloseClawCommand(this.clawSubsystem),
+                        new WaitCommand(250),
+                        new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.REST),
+                        new MoveArmToPointWithPID(this.armSubsystem, ArmSubsystem.ArmPositions.REST)
+                ));
         new Trigger(() -> Math.abs(this.actionController.getRightY()) > 0.1).whenActive(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
     }
 }

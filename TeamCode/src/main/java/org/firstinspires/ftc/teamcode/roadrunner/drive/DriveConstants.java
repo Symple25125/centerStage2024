@@ -67,7 +67,7 @@ public class DriveConstants {
      * inches.
      */
 
-     //                                                                                         To not give the full value
+     //                                                                                         Do not give the full value
     public static double MAX_VEL = (MAX_RPM / 60f) * GEAR_RATIO * WHEEL_RADIUS * 2 * Math.PI  * 0.8;
     public static double MAX_ACCEL = MAX_VEL;
     public static double MAX_ANG_VEL = Math.toRadians(60);

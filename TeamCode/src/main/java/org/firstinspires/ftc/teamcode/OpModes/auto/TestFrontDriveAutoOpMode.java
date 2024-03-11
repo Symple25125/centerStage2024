@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.auto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
@@ -17,12 +18,15 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
 
+@Config
 @Autonomous(name = "Test Front Drive")
 public class TestFrontDriveAutoOpMode extends CommandOpMode {
     private DriveBaseSubsystem driveBase;
     private JointSubSystem jointSubSystem;
     private ArmSubsystem armSubsystem;
     private ClawSubsystem clawSubsystem;
+
+    public static double METERS = 0.1f;
 
 
     @Override
@@ -41,7 +45,7 @@ public class TestFrontDriveAutoOpMode extends CommandOpMode {
                 new MoveJointToPosition(this.jointSubSystem, JointSubSystem.JointPositions.PUT)
         ).schedule();
 
-        new DriveDistanceDriveCommand(this.driveBase, 50f).schedule();
+        new DriveDistanceDriveCommand(this.driveBase, METERS).schedule();
     }
 
     @Override

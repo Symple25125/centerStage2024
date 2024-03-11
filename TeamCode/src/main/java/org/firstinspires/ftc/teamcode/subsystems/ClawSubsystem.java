@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.util.Servos;
 public class ClawSubsystem extends SubsystemBase {
 
     private final ServoEx servo;
-    private static final double OFFSET = 120;
+    private static final double OFFSET = 165;
 
     public ClawSubsystem(HardwareMap hMap) {
         this.servo = new SimpleServo(hMap, Servos.CLAW.id, 0, 360, AngleUnit.DEGREES);

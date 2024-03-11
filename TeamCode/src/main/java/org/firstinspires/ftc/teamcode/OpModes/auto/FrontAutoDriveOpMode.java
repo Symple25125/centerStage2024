@@ -3,24 +3,22 @@ package org.firstinspires.ftc.teamcode.OpModes.auto;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
-import com.arcrobotics.ftclib.util.Timing;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.commands.arm.MoveArmToPointWithPID;
 import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
 import org.firstinspires.ftc.teamcode.commands.drivebase.MoveMotorDiveCommand;
+import org.firstinspires.ftc.teamcode.commands.joint.EnableJointCommand;
 import org.firstinspires.ftc.teamcode.commands.joint.MoveJointToPosition;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
 
-import java.util.concurrent.TimeUnit;
-
 @Autonomous(name = "Front Auto Drive")
 public class FrontAutoDriveOpMode extends CommandOpMode {
     private DriveBaseSubsystem driveBase;
-    private JointSubSystem jointSubSystem;
+    private JointSubSystem jointSubsystem;
     private ArmSubsystem armSubsystem;
     private ClawSubsystem clawSubsystem;
 
@@ -31,15 +29,17 @@ public class FrontAutoDriveOpMode extends CommandOpMode {
     @Override
     public void initialize() {
         this.driveBase = new DriveBaseSubsystem(hardwareMap);
-        this.jointSubSystem = new JointSubSystem(hardwareMap);
+        this.jointSubsystem = new JointSubSystem(hardwareMap);
         this.armSubsystem = new ArmSubsystem(hardwareMap);
         this.clawSubsystem = new ClawSubsystem(hardwareMap);
+
+        new EnableJointCommand(this.jointSubsystem).schedule();
 
         new CloseClawCommand(this.clawSubsystem).schedule();
 
         new ParallelCommandGroup(
                 new MoveArmToPointWithPID(this.armSubsystem, ArmSubsystem.ArmPositions.HOOK),
-                new MoveJointToPosition(this.jointSubSystem, JointSubSystem.JointPositions.PUT)
+                new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PUT)
         ).schedule();
 
         new WaitCommand(wait_time)

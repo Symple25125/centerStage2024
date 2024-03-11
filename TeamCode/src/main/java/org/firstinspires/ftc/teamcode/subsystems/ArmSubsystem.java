@@ -19,7 +19,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public static final double ARM_STARTING_DEG = -49f;
     public static final double GEAR_RATIO = Motors.RIGHT_ARM.gearRatio;
-    public static final double MIN_DEG = ARM_STARTING_DEG - 5f;
+    public static final double MIN_DEG = ARM_STARTING_DEG - 75f;
     public static final double MAX_DEG = 190f;
 
     public ArmSubsystem(HardwareMap hMap, boolean shouldResetPos) {
@@ -66,7 +66,9 @@ public class ArmSubsystem extends SubsystemBase {
         TAKE(ARM_STARTING_DEG),
         PLACE(125),
         FOLD(ARM_STARTING_DEG),
-        HOOK(90);
+        HOOK(90),
+        GRAB(MIN_DEG),
+        REST(ARM_STARTING_DEG+35);
 
         public final double deg;
 

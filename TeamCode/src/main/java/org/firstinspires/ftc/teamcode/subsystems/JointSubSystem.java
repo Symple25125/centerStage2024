@@ -2,22 +2,26 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.arcrobotics.ftclib.hardware.ServoEx;
-import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.util.FeedForward;
 import org.firstinspires.ftc.teamcode.util.Servos;
+import org.firstinspires.ftc.teamcode.util.SympleServo;
 
 @Config
 public class JointSubSystem extends SubsystemBase {
-    private final ServoEx servo;
-    public static final double OFFSET = 155;
+    private final SympleServo servo;
+    public static final double OFFSET = 0;
 
     public JointSubSystem(HardwareMap hMap) {
-        this.servo = new SimpleServo(hMap, Servos.CLAW_JOINT.id, OFFSET - 180, OFFSET + 180, AngleUnit.DEGREES);
+        this.servo = new SympleServo(hMap, Servos.CLAW_JOINT.id, OFFSET - 180, OFFSET + 180, AngleUnit.DEGREES);
+    }
+
+    public void disableServo() {
+        this.servo.disable();
+    }
+    public void enableServo() {
+        this.servo.enable();
     }
 
     public void moveServo(JointPositions position) {
@@ -30,8 +34,10 @@ public class JointSubSystem extends SubsystemBase {
 
     public enum JointPositions {
         PICKUP(50),
-        PUT(165),
-        HOOK(-120);
+        PUT(180),
+        HOOK(-120),
+        ZERO(0),
+        REST(95);
 
 
         public final double deg;

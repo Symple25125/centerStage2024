@@ -5,7 +5,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PController;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 
 @Config
@@ -14,24 +13,24 @@ public class DriveDistanceDriveCommand extends CommandBase {
     private PController pController;
 
     public static double Kp = 0.5;
-    private static double Ks = 0.07;
+    private static final double MAX_POWER = 0.3f;
 
-    private double STARTING_ENCODER_POS;
+    private double STARTING_POS;
     private final double finalPos;
 
-    public DriveDistanceDriveCommand(DriveBaseSubsystem driveBaseSubsystem, double cmToMove) {
+    public DriveDistanceDriveCommand(DriveBaseSubsystem driveBaseSubsystem, double meters) {
         addRequirements(driveBaseSubsystem);
         this.driveBaseSubsystem = driveBaseSubsystem;
-        this.finalPos = cmToMove;
+        this.finalPos = meters;
 
         this.pController = new PController(Kp);
-        this.pController.setTolerance(1);
+        this.pController.setTolerance(0.01);
     }
 
     @Override
     public void initialize() {
         super.initialize();
-        this.STARTING_ENCODER_POS = this.driveBaseSubsystem.getMotorEncoderPos();
+        this.STARTING_POS = this.driveBaseSubsystem.getLeftWheelDistanceDriven();
         this.pController.setSetPoint(this.finalPos);
     }
 
@@ -39,15 +38,18 @@ public class DriveDistanceDriveCommand extends CommandBase {
     public void execute() {
         super.execute();
 
-        double driveDistance = this.driveBaseSubsystem.encoderTicksToCM(this.driveBaseSubsystem.getMotorEncoderPos() - this.STARTING_ENCODER_POS);
+        double driveDistance = (this.driveBaseSubsystem.getLeftWheelDistanceDriven() - this.STARTING_POS);
 
-        double power = this.pController.calculate(driveDistance);
-        power += Math.signum(power) * Ks;
+        double rawPower = this.pController.calculate(driveDistance);
+        rawPower += Math.signum(rawPower) * DriveBaseSubsystem.Ks;
+
+        double power = Math.min(Math.max(rawPower, -MAX_POWER), MAX_POWER);
+
 
         FtcDashboard.getInstance().getTelemetry().addData("power", power);
         FtcDashboard.getInstance().getTelemetry().addData("dist", driveDistance);
-        FtcDashboard.getInstance().getTelemetry().addData("rel motor encoder", this.driveBaseSubsystem.getMotorEncoderPos() - this.STARTING_ENCODER_POS);
-        FtcDashboard.getInstance().getTelemetry().addData("motor encoder", this.driveBaseSubsystem.getMotorEncoderPos());
+        FtcDashboard.getInstance().getTelemetry().addData("rel motor encoder", this.driveBaseSubsystem.getLeftWheelDistanceDriven() - this.STARTING_POS);
+        FtcDashboard.getInstance().getTelemetry().addData("motor encoder", this.driveBaseSubsystem.getLeftWheelDistanceDriven());
         FtcDashboard.getInstance().getTelemetry().update();
 
         this.driveBaseSubsystem.moveMotors(power, power);
