@@ -141,11 +141,9 @@ public class DriverOpMode extends CommandOpMode {
 
         new Trigger(() -> this.actionController.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5f)
                 .whenActive(
-                        new ParallelCommandGroup(
-                                new GoToPickupPositionCommand(this.armSubsystem),
-                                new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PICKUP),
-                                new OpenClawCommand(this.clawSubsystem)
-                        )
+                                new GoToPickupPositionCommand(this.armSubsystem)
+                                        .alongWith(new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PICKUP))
+                                        .andThen(new OpenClawCommand(this.clawSubsystem))
                 )
                 .whenInactive(new SequentialCommandGroup(
                         new CloseClawCommand(this.clawSubsystem),
