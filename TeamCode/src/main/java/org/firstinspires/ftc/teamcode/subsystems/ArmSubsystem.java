@@ -62,6 +62,12 @@ public class ArmSubsystem extends SubsystemBase {
         return (MathUtil.countsToDeg(this.right_motor.getCurrentPosition(), Motors.RIGHT_ARM.ticksPerRev) * GEAR_RATIO) + ARM_STARTING_DEG;
     }
 
+    public boolean isAtPosition(ArmPositions pos, double safeZone) {
+         double absPos = Math.abs(this.getCurrentPos() - pos.deg);
+
+         return absPos <= safeZone;
+    }
+
     public enum ArmPositions {
         TAKE(ARM_STARTING_DEG),
         PLACE(125),

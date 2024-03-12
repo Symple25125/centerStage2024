@@ -24,7 +24,7 @@ public class DriveDistanceDriveCommand extends CommandBase {
         this.finalPos = meters;
 
         this.pController = new PController(Kp);
-        this.pController.setTolerance(0.01);
+        this.pController.setTolerance(0.05);
     }
 
     @Override

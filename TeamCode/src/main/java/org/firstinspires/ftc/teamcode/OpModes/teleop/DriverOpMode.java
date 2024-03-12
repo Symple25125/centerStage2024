@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.command.WaitUntilCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -110,6 +111,7 @@ public class DriverOpMode extends CommandOpMode {
 
         this.actionController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(new ParallelCommandGroup(
+                    new CloseClawCommand(this.clawSubsystem),
                     new MoveArmToPointWithPID(this.armSubsystem, ArmSubsystem.ArmPositions.PLACE),
                     new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PUT)
                 ));
@@ -141,13 +143,18 @@ public class DriverOpMode extends CommandOpMode {
 
         new Trigger(() -> this.actionController.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5f)
                 .whenActive(
-                                new GoToPickupPositionCommand(this.armSubsystem)
-                                        .alongWith(new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PICKUP))
-                                        .andThen(new OpenClawCommand(this.clawSubsystem))
+                        new ParallelCommandGroup(
+                                new GoToPickupPositionCommand(this.armSubsystem),
+                                new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.PICKUP),
+                                new SequentialCommandGroup(
+                                        new WaitUntilCommand(() -> this.armSubsystem.isAtPosition(ArmSubsystem.ArmPositions.TAKE, 5f)),
+                                        new OpenClawCommand(this.clawSubsystem)
+                                )
+                        )
                 )
                 .whenInactive(new SequentialCommandGroup(
                         new CloseClawCommand(this.clawSubsystem),
-                        new WaitCommand(250),
+                        new WaitCommand(500),
                         new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.REST),
                         new MoveArmToPointWithPID(this.armSubsystem, ArmSubsystem.ArmPositions.REST)
                 ));
