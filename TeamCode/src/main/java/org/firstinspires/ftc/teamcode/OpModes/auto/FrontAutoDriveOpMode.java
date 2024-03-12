@@ -33,7 +33,7 @@ public class FrontAutoDriveOpMode extends OpMode {
     public void init() {
         this.driveBase = new DriveBaseSubsystem(hardwareMap);
         this.jointSubsystem = new JointSubSystem(hardwareMap);
-        this.armSubsystem = new ArmSubsystem(hardwareMap,false);
+        this.armSubsystem = new ArmSubsystem(hardwareMap);
         this.clawSubsystem = new ClawSubsystem(hardwareMap);
 
     }
