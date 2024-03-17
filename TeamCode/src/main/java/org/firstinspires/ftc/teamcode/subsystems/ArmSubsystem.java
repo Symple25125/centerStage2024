@@ -70,7 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public enum ArmPositions {
         TAKE(ARM_STARTING_DEG),
-        PLACE(125),
+        PLACE(110),
         FOLD(ARM_STARTING_DEG),
         HOOK(90),
         GRAB(MIN_DEG),

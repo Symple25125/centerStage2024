@@ -44,15 +44,6 @@ public class FrontAutoDriveOpMode extends CommandOpMode {
     private void sympleStart() {
         new EnableJointCommand(this.jointSubsystem).schedule();
 
-//        new WaitCommand(wait_time/2)
-//                .andThen().schedule();
-
-//        new WaitCommand(wait_time)
-//                .andThen(new MoveMotorDiveCommand(this.driveBase, drive_time, motor_power, motor_power))
-//                .andThen(new OpenClawCommand(this.clawSubsystem))
-//                .andThen(new MoveMotorDiveCommand(this.driveBase, 350, -motor_power, -motor_power))
-//                .schedule();
-
         new SequentialCommandGroup(
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
@@ -68,7 +59,7 @@ public class FrontAutoDriveOpMode extends CommandOpMode {
                         new MoveArmToPointWithPID(this.armSubsystem, ArmSubsystem.ArmPositions.REST),
                         new MoveJointToPosition(this.jointSubsystem, JointSubSystem.JointPositions.REST)
                 ),
-                new DriveDistanceDriveCommand(this.driveBase, 1.15f),
+                new DriveDistanceDriveCommand(this.driveBase, 1.15f).withTimeout(7000),
                 new WaitCommand(500),
                 new OpenClawCommand(this.clawSubsystem),
                 new WaitCommand(500),
