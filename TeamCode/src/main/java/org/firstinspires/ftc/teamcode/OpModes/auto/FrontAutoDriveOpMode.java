@@ -21,9 +21,10 @@ import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
+import org.firstinspires.ftc.teamcode.util.AutoOpMode;
 
 @Autonomous(name = "Front Auto Drive")
-public class FrontAutoDriveOpMode extends CommandOpMode {
+public class FrontAutoDriveOpMode extends AutoOpMode {
     private DriveBaseSubsystem driveBase;
     private JointSubSystem jointSubsystem;
     private ArmSubsystem armSubsystem;
@@ -41,7 +42,8 @@ public class FrontAutoDriveOpMode extends CommandOpMode {
         this.clawSubsystem = new ClawSubsystem(hardwareMap);
     }
 
-    private void sympleStart() {
+    @Override
+    public void sympleStart() {
         new EnableJointCommand(this.jointSubsystem).schedule();
 
         new SequentialCommandGroup(
@@ -68,16 +70,16 @@ public class FrontAutoDriveOpMode extends CommandOpMode {
     }
 
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        this.initialize();
-        this.waitForStart();
-        this.sympleStart();
-
-        while(!this.isStopRequested() && this.opModeIsActive()) {
-            this.run();
-        }
-
-        this.reset();
-    }
+//    @Override
+//    public void runOpMode() throws InterruptedException {
+//        this.initialize();
+//        this.waitForStart();
+//        this.sympleStart();
+//
+//        while(!this.isStopRequested() && this.opModeIsActive()) {
+//            this.run();
+//        }
+//
+//        this.reset();
+//    }
 }

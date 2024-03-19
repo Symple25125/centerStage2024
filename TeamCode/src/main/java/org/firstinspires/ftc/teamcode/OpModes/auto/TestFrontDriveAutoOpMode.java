@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubSystem;
 
 @Config
-@Autonomous(name = "Test Front Drive")
+@Autonomous(name = "Test Front Drive", group = "test")
 public class TestFrontDriveAutoOpMode extends CommandOpMode {
     private DriveBaseSubsystem driveBase;
     private JointSubSystem jointSubSystem;
