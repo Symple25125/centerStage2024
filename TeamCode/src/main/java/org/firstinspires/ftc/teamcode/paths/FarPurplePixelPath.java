@@ -13,8 +13,8 @@ public class FarPurplePixelPath extends SequentialCommandGroup {
         double rotationModifier = color == TeamColor.BLUE ? -1 : 1;
 
         addCommands(
-                new DriveDistanceDriveCommand(driveBaseSubsystem, 0.6f),
-                new RotateRobotByDegCommand(driveBaseSubsystem, 45 * rotationModifier)
+                new DriveDistanceDriveCommand(driveBaseSubsystem, 0.6f).withTimeout(3500),
+                new RotateRobotByDegCommand(driveBaseSubsystem, 45 * rotationModifier, 0.035f)
         );
     }
 }

@@ -4,16 +4,14 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.util.Servos;
 
 @Config
 public class ClawSubsystem extends SubsystemBase {
+    private static ClawState currentState;
 
     private final ServoEx servo;
     private static final double OFFSET = 190;
@@ -32,6 +30,7 @@ public class ClawSubsystem extends SubsystemBase {
 
     public void moveClawToPosition(ClawPositions clawPositions) {
         servo.turnToAngle(clawPositions.deg);
+        ClawSubsystem.setState(clawPositions.state);
     }
 
     public void moveClawToAngle(double deg) {
@@ -42,15 +41,34 @@ public class ClawSubsystem extends SubsystemBase {
         return servo.getAngle() + OFFSET;
     }
 
+    public static void setState(ClawState currentState) {
+        ClawSubsystem.currentState = currentState;
+    }
+
+    public static ClawState getCurrentState() {
+        return currentState;
+    }
+
     public enum ClawPositions {
-        OPEN(90),
-        CLOSE(160),
-        FULL_OPEN(45);
+        OPEN(90, ClawState.OPEN),
+        CLOSE(160, ClawState.CLOSE);
 
         public final double deg;
+        public final ClawState state;
 
         ClawPositions(double deg) {
-            this.deg = deg + OFFSET;
+            this(deg, ClawState.UNKNOWN);
         }
+
+        ClawPositions(double deg, ClawState state) {
+            this.deg = deg + OFFSET;
+            this.state = state;
+        }
+    }
+
+    public enum ClawState {
+        UNKNOWN,
+        OPEN,
+        CLOSE
     }
 }

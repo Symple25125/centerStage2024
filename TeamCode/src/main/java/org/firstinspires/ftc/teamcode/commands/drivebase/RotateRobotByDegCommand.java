@@ -10,7 +10,7 @@ public class RotateRobotByDegCommand extends CommandBase {
     private DriveBaseSubsystem driveBaseSubsystem;
     private PController pController;
 
-    public static final double Kp = 0.05f;
+    public static final double defaultKp = 0.05f;
     private static final double MAX_POWER = 0.3f;
 
     private int timesDone = 0;
@@ -20,12 +20,16 @@ public class RotateRobotByDegCommand extends CommandBase {
 
     private double STARTING_ANGLE;
 
-    public RotateRobotByDegCommand(DriveBaseSubsystem driveBaseSubsystem, double degToRotate) {
+    public RotateRobotByDegCommand(DriveBaseSubsystem driveBaseSubsystem, double degToRotate, double kp) {
         addRequirements(driveBaseSubsystem);
         this.driveBaseSubsystem = driveBaseSubsystem;
-        this.pController = new PController(Kp);
+        this.pController = new PController(kp);
         this.pController.setTolerance(2.5);
         this.degToRotate = degToRotate;
+    }
+
+    public RotateRobotByDegCommand(DriveBaseSubsystem driveBaseSubsystem, double degToRotate) {
+        this(driveBaseSubsystem, degToRotate, defaultKp);
     }
 
     @Override

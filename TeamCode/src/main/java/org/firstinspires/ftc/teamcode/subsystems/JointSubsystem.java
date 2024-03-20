@@ -9,11 +9,11 @@ import org.firstinspires.ftc.teamcode.util.Servos;
 import org.firstinspires.ftc.teamcode.util.SympleServo;
 
 @Config
-public class JointSubSystem extends SubsystemBase {
+public class JointSubsystem extends SubsystemBase {
     private final SympleServo servo;
     public static final double OFFSET = 0;
 
-    public JointSubSystem(HardwareMap hMap) {
+    public JointSubsystem(HardwareMap hMap) {
         this.servo = new SympleServo(hMap, Servos.CLAW_JOINT.id, OFFSET - 180, OFFSET + 180, AngleUnit.DEGREES);
     }
 

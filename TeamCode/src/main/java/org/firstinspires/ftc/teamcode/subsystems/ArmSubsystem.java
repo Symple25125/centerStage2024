@@ -12,15 +12,19 @@ import org.firstinspires.ftc.teamcode.util.Motors;
 
 @Config
 public class ArmSubsystem extends SubsystemBase {
+    private static ArmState currentArmState = ArmState.JOYSTICK;
+
     private final MotorEx right_motor;
     private final MotorEx left_motor;
 
     private final MotorGroup motors;
 
-    public static final double ARM_STARTING_DEG = -49f;
+    public static final double ARM_STARTING_DEG = -43.2;
     public static final double GEAR_RATIO = Motors.RIGHT_ARM.gearRatio;
     public static final double MIN_DEG = ARM_STARTING_DEG - 75f;
     public static final double MAX_DEG = 190f;
+
+    public static double JOYSTICK_DEAD_AREA = 0.05;
 
     public ArmSubsystem(HardwareMap hMap, boolean shouldResetPos) {
         this.right_motor = new MotorEx(hMap, Motors.RIGHT_ARM.id);
@@ -31,7 +35,6 @@ public class ArmSubsystem extends SubsystemBase {
         this.motors = new MotorGroup(this.right_motor, this.left_motor);
 
         if(shouldResetPos) this.motors.resetEncoder();
-
     }
 
     public ArmSubsystem(HardwareMap hMap) {
@@ -68,18 +71,52 @@ public class ArmSubsystem extends SubsystemBase {
          return absPos <= safeZone;
     }
 
+    public static void setState(ArmState state) {
+        ArmSubsystem.currentArmState = state;
+    }
+
+    public static ArmState getState() {
+        return currentArmState;
+    }
+
+    public static ArmPositions getNextScorePos() {
+        if(currentArmState == ArmState.SCORE_LOWER) return ArmPositions.SCORE_MIDDLE;
+        if(currentArmState == ArmState.SCORE_MIDDLE) return ArmPositions.SCORE_UPPER;
+        return ArmPositions.SCORE_LOWER;
+    }
+
     public enum ArmPositions {
-        TAKE(ARM_STARTING_DEG),
-        PLACE(110),
-        FOLD(ARM_STARTING_DEG),
-        HOOK(90),
-        GRAB(MIN_DEG),
-        REST(ARM_STARTING_DEG+35);
+        PICKUP(ARM_STARTING_DEG, ArmState.PICKUP),
+        SCORE_LOWER(110, ArmState.SCORE_LOWER),
+        SCORE_MIDDLE(105, ArmState.SCORE_MIDDLE),
+        SCORE_UPPER(100, ArmState.SCORE_UPPER),
+        HOOK(90, ArmState.HOOK),
+        GRAB(MIN_DEG, ArmState.GRAB),
+        REST(ARM_STARTING_DEG+35, ArmState.REST),
+        UNKNOWN(90, ArmState.UNKNOWN);
 
         public final double deg;
+        public final ArmState state;
 
         ArmPositions(double deg) {
-            this.deg = deg;
+            this(deg, ArmState.UNKNOWN);
         }
+
+        ArmPositions(double deg, ArmState state) {
+            this.deg = deg;
+            this.state = state;
+        }
+    }
+
+    public enum ArmState {
+        UNKNOWN,
+        JOYSTICK,
+        PICKUP,
+        REST,
+        SCORE_LOWER,
+        SCORE_MIDDLE,
+        SCORE_UPPER,
+        HOOK,
+        GRAB
     }
 }

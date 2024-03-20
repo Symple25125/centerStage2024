@@ -7,39 +7,23 @@ import com.arcrobotics.ftclib.controller.PController;
 import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 
 @Config
-public class MoveArmToPointWithPID extends CommandBase {
+public class HoldArmPositionWithPIDCommand extends CommandBase {
     protected final ArmSubsystem armSubsystem;
     protected final PController pController;
-    private double point;
-    public static double DefaultKp = 0.01;
+    public static double KP = 0.01;
     public double MAX_POWER = 0.8f;
 
-    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos, double kp) {
+    public HoldArmPositionWithPIDCommand(ArmSubsystem armSubsystem) {
         addRequirements(armSubsystem);
 
         this.armSubsystem = armSubsystem;
-        this.point = pos.deg;
-        this.pController = new PController(kp);
+        this.pController = new PController(KP);
         this.pController.setTolerance(1);
-    }
-
-    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, double deg, double kp) {
-        this(armSubsystem, ArmSubsystem.ArmPositions.HOOK, kp);
-        this.point = deg;
-    }
-
-    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos) {
-        this(armSubsystem, pos, DefaultKp);
-    }
-
-    public MoveArmToPointWithPID(ArmSubsystem armSubsystem, double pos) {
-        this(armSubsystem, ArmSubsystem.ArmPositions.PLACE, DefaultKp);
-        this.point = pos;
     }
 
     @Override
     public void initialize() {
-        this.pController.setSetPoint(this.point);
+        this.pController.setSetPoint(armSubsystem.getCurrentPos());
     }
 
     @Override

@@ -13,10 +13,17 @@ public class ArmByJoystickCommand extends CommandBase {
         addRequirements(armSubsystem);
         this.armSubsystem = armSubsystem;
         this.controller = controller;
+
+        ArmSubsystem.setState(ArmSubsystem.ArmState.JOYSTICK);
     }
 
     @Override
     public void execute() {
         this.armSubsystem.moveMotor(-this.controller.getRightY() * 0.75f);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return Math.abs(this.controller.getRightY()) <= ArmSubsystem.JOYSTICK_DEAD_AREA;
     }
 }
