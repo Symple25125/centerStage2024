@@ -51,6 +51,7 @@ public class ClawSubsystem extends SubsystemBase {
 
     public enum ClawPositions {
         OPEN(90, ClawState.OPEN),
+        HALF_OPEN(153, ClawState.HALF_OPEN),
         CLOSE(160, ClawState.CLOSE);
 
         public final double deg;
@@ -69,6 +70,7 @@ public class ClawSubsystem extends SubsystemBase {
     public enum ClawState {
         UNKNOWN,
         OPEN,
+        HALF_OPEN,
         CLOSE
     }
 }

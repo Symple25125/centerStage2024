@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.RobotController;
+import org.firstinspires.ftc.teamcode.commands.arm.ArmGoToRestPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.arm.MoveArmToPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.OpenClawCommand;
@@ -26,10 +27,12 @@ public class FrontAutoDriveOpMode extends AutoOpMode {
     @Override
     public void initialize() {
         this.robotController = new RobotController(OpModeType.Auto, hardwareMap, telemetry, gamepad1, gamepad2, TeamColor.RED);
+        this.robotController.init();
     }
 
     @Override
     public void sympleStart() {
+        this.robotController.sympleStart();
         new SequentialCommandGroup(
                 new SequentialCommandGroup(
                         new ParallelDeadlineGroup(
@@ -42,7 +45,7 @@ public class FrontAutoDriveOpMode extends AutoOpMode {
                 new WaitCommand(3000),
                 new ParallelDeadlineGroup(
                         new WaitCommand(wait_time),
-                        new MoveArmToPositionCommand(this.robotController.armSubsystem, ArmSubsystem.ArmPositions.REST),
+                        new ArmGoToRestPositionCommand(this.robotController.armSubsystem),
                         new MoveJointToPosition(this.robotController.jointSubsystem, JointSubsystem.JointPositions.REST)
                 ),
                 new DriveDistanceDriveCommand(this.robotController.driveBase, 1.15f).withTimeout(7000),

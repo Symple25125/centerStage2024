@@ -16,10 +16,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.arm.ArmByJoystickCommand;
+import org.firstinspires.ftc.teamcode.commands.arm.ArmGoToRestPositionCommand;
 import org.firstinspires.ftc.teamcode.commands.arm.GoToScorePositionCommand;
 import org.firstinspires.ftc.teamcode.commands.arm.HoldArmPositionWithPIDCommand;
 import org.firstinspires.ftc.teamcode.commands.arm.MoveArmToPositionCommand;
-import org.firstinspires.ftc.teamcode.commands.arm.RobotGoUpCommandTo;
+import org.firstinspires.ftc.teamcode.commands.arm.RobotGoUpCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.OpenClawCommand;
 import org.firstinspires.ftc.teamcode.commands.claw.ToggleClawCommand;
@@ -63,7 +64,15 @@ public class RobotController {
         this.driverController = new GamepadEx(driverController);
         this.actionController = new GamepadEx(actionController);
 
+        FtcDashboard.getInstance().stopCameraStream();
+    }
+
+    public void init() {
         initOpMode();
+    }
+
+    public void sympleStart() {
+        enableJointServo();
     }
 
     public void initOpMode() {
@@ -111,9 +120,9 @@ public class RobotController {
         initClaw();
         initDrone();
 //
-//        initTestingButtons();
-        initDriverButtons();
-        initActionButtons();
+        initTestingButtons();
+//        initDriverButtons();
+//        initActionButtons();
     }
 
     public void initDriveBase() {
@@ -128,7 +137,10 @@ public class RobotController {
 
     public void initJoint() {
         this.jointSubsystem = new JointSubsystem(hardwareMap);
-        new EnableJointCommand(this.jointSubsystem).schedule();
+    }
+
+    public void enableJointServo() {
+        new EnableJointCommand(this.jointSubsystem);
     }
 
     public void initClaw() {
@@ -144,12 +156,6 @@ public class RobotController {
     }
 
     public void initDriverButtons() {
-        this.driverController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .toggleWhenPressed(
-                        new InstantCommand(() -> this.driveBase.changeSpeedModifier(DriveBaseSubsystem.SLOW_SPEED_MODIFIER)),
-                        new InstantCommand(() -> this.driveBase.changeSpeedModifier(DriveBaseSubsystem.NORMAL_SPEED_MODIFIER))
-                );
-
         this.driverController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .toggleWhenPressed(
                         new InstantCommand(() -> this.driveBase.setInverted(true)),
@@ -164,14 +170,13 @@ public class RobotController {
 
     public void initActionButtons() {
         this.actionController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(new ParallelCommandGroup(
-                        new MoveArmToPositionCommand(this.armSubsystem, ArmSubsystem.ArmPositions.PICKUP),
-                        new MoveJointToPosition(this.jointSubsystem, JointSubsystem.JointPositions.PICKUP)
-                ));
+                .whenPressed(
+                        new MoveArmToPositionCommand(this.armSubsystem, ArmSubsystem.ArmPositions.SCORE_LOWER)
+                );
 
         this.actionController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(
-                        new GoToScorePositionCommand(this.clawSubsystem, this.armSubsystem, this.jointSubsystem, ArmSubsystem.getNextScorePos())
+                        new GoToScorePositionCommand(this.clawSubsystem, this.armSubsystem, this.jointSubsystem)
                 );
 
         this.actionController.getGamepadButton(GamepadKeys.Button.A)
@@ -190,27 +195,26 @@ public class RobotController {
                 .whenPressed(
                         new ParallelCommandGroup(
                                 new DisableJointCommand(this.jointSubsystem),
-                                new RobotGoUpCommandTo(this.armSubsystem)
+                                new RobotGoUpCommand(this.armSubsystem)
                         )
                 );
 
 
         new Trigger(() -> this.actionController.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.5f)
                 .whenActive(
-                        new ParallelCommandGroup(
-                                new MoveArmToPositionCommand(this.armSubsystem, ArmSubsystem.ArmPositions.PICKUP),
+                        new SequentialCommandGroup(
+                                new CloseClawCommand(this.clawSubsystem),
                                 new MoveJointToPosition(this.jointSubsystem, JointSubsystem.JointPositions.PICKUP),
-                                new SequentialCommandGroup(
-                                        new WaitUntilCommand(() -> this.armSubsystem.isAtPosition(ArmSubsystem.ArmPositions.PICKUP, 5f)),
-                                        new OpenClawCommand(this.clawSubsystem)
-                                )
+                                new MoveArmToPositionCommand(this.armSubsystem, ArmSubsystem.ArmPositions.PICKUP),
+                                new WaitUntilCommand(() -> this.armSubsystem.isAtPosition(ArmSubsystem.ArmPositions.PICKUP, 5f)),
+                                new OpenClawCommand(this.clawSubsystem)
                         )
                 )
                 .whenInactive(new SequentialCommandGroup(
                         new CloseClawCommand(this.clawSubsystem),
                         new WaitCommand(500),
                         new MoveJointToPosition(this.jointSubsystem, JointSubsystem.JointPositions.REST),
-                        new MoveArmToPositionCommand(this.armSubsystem, ArmSubsystem.ArmPositions.REST)
+                        new ArmGoToRestPositionCommand(this.armSubsystem)
                 ));
         new Trigger(() -> Math.abs(this.actionController.getRightY()) > ArmSubsystem.JOYSTICK_DEAD_AREA).whenActive(new ArmByJoystickCommand(this.armSubsystem, this.actionController));
     }

@@ -12,6 +12,6 @@ public class ToggleClawCommand extends InstantCommand {
             } else {
                 clawSubsystem.openClaw();
             }
-        });
+        }, clawSubsystem);
     }
 }

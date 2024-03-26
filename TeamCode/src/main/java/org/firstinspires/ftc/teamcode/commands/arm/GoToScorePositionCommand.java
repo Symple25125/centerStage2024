@@ -9,13 +9,21 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubsystem;
 
 public class GoToScorePositionCommand extends ParallelCommandGroup {
-    public GoToScorePositionCommand(ClawSubsystem clawSubsystem, ArmSubsystem armSubsystem, JointSubsystem jointSubsystem, ArmSubsystem.ArmPositions pos) {
+    public GoToScorePositionCommand(ClawSubsystem clawSubsystem, ArmSubsystem armSubsystem, JointSubsystem jointSubsystem) {
         super();
 
         addCommands(
                 new CloseClawCommand(clawSubsystem),
-                new MoveArmToPositionCommand(armSubsystem, pos),
-                new MoveJointToPosition(jointSubsystem, JointSubsystem.JointPositions.PUT)
+//                new SelectCommand(
+//                    new HashMap<Object, Command>() {{
+//                        put(ArmSubsystem.ArmPositions.SCORE_LOWER, new MoveArmToPositionCommand(armSubsystem, ArmSubsystem.ArmPositions.SCORE_LOWER));
+//                        put(ArmSubsystem.ArmPositions.SCORE_MIDDLE, new MoveArmToPositionCommand(armSubsystem, ArmSubsystem.ArmPositions.SCORE_MIDDLE));
+//                        put(ArmSubsystem.ArmPositions.SCORE_UPPER, new MoveArmToPositionCommand(armSubsystem, ArmSubsystem.ArmPositions.SCORE_UPPER));
+//                    }},
+//                    ArmSubsystem::getNextScorePos
+//                ),
+                new MoveArmToPositionCommand(armSubsystem, ArmSubsystem.ArmPositions.SCORE_UPPER),
+                new MoveJointToPosition(jointSubsystem, JointSubsystem.JointPositions.SCORE)
         );
     }
 }

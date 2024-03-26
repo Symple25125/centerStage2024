@@ -27,15 +27,18 @@ public class BackAutoDriveOpMode extends AutoOpMode {
     @Override
     public void initialize() {
         this.robotController = new RobotController(OpModeType.Auto, hardwareMap, telemetry, gamepad1, gamepad2, TeamColor.RED);
+        this.robotController.init();
     }
 
     @Override
     public void sympleStart() {
+        this.robotController.sympleStart();
+
         new CloseClawCommand(this.robotController.clawSubsystem).schedule();
 
         new ParallelCommandGroup(
                 new MoveArmToPositionCommand(this.robotController.armSubsystem, ArmSubsystem.ArmPositions.HOOK),
-                new MoveJointToPosition(this.robotController.jointSubsystem, JointSubsystem.JointPositions.PUT)
+                new MoveJointToPosition(this.robotController.jointSubsystem, JointSubsystem.JointPositions.SCORE)
         ).schedule();
 
         new WaitCommand(wait_time)

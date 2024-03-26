@@ -21,8 +21,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     public static final double ARM_STARTING_DEG = -43.2;
     public static final double GEAR_RATIO = Motors.RIGHT_ARM.gearRatio;
-    public static final double MIN_DEG = ARM_STARTING_DEG - 75f;
-    public static final double MAX_DEG = 190f;
+    public static final double MIN_DEG = ARM_STARTING_DEG - 35f;
+    public static final double MAX_DEG = 190;
 
     public static double JOYSTICK_DEAD_AREA = 0.05;
 
@@ -92,7 +92,7 @@ public class ArmSubsystem extends SubsystemBase {
         SCORE_UPPER(100, ArmState.SCORE_UPPER),
         HOOK(90, ArmState.HOOK),
         GRAB(MIN_DEG, ArmState.GRAB),
-        REST(ARM_STARTING_DEG+35, ArmState.REST),
+        REST(ARM_STARTING_DEG + 20, ArmState.REST),
         UNKNOWN(90, ArmState.UNKNOWN);
 
         public final double deg;

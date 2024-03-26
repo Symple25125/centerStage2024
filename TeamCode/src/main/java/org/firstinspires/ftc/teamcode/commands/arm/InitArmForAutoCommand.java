@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.commands.arm;
 
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.commands.claw.CloseClawCommand;
 import org.firstinspires.ftc.teamcode.commands.joint.EnableJointCommand;
@@ -14,11 +15,10 @@ public class InitArmForAutoCommand extends SequentialCommandGroup {
         super();
 
         addCommands(
-                new EnableJointCommand(jointSubSystem),
-                new MoveArmToPositionCommand(armSubsystem, ArmSubsystem.ArmPositions.PICKUP)
-                        .alongWith(new MoveJointToPosition(jointSubSystem, JointSubsystem.JointPositions.PICKUP))
-                        .withTimeout(500)
-                        .andThen(new CloseClawCommand(clawSubsystem))
+                new CloseClawCommand(clawSubsystem),
+                new WaitCommand(500),
+                new ArmGoToRestPositionCommand(armSubsystem)
+                    .alongWith(new MoveJointToPosition(jointSubSystem, JointSubsystem.JointPositions.REST))
         );
     }
 }

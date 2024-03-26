@@ -6,6 +6,6 @@ import org.firstinspires.ftc.teamcode.subsystems.ClawSubsystem;
 
 public class CloseClawCommand extends InstantCommand {
     public CloseClawCommand(ClawSubsystem clawSubsystem) {
-        super(clawSubsystem::closeClaw , clawSubsystem);
+        super(clawSubsystem::closeClaw, clawSubsystem);
     }
 }

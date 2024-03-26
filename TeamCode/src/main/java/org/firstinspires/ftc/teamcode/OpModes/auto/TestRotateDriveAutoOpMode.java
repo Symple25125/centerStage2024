@@ -26,15 +26,18 @@ public class TestRotateDriveAutoOpMode extends AutoOpMode {
     @Override
     public void initialize() {
         this.robotController = new RobotController(OpModeType.Auto, hardwareMap, telemetry, gamepad1, gamepad2, TeamColor.RED);
+        this.robotController.init();
     }
 
     @Override
     public void sympleStart() {
+        this.robotController.sympleStart();
+
         new CloseClawCommand(this.robotController.clawSubsystem).schedule();
 
         new ParallelCommandGroup(
                 new MoveArmToPositionCommand(this.robotController.armSubsystem, ArmSubsystem.ARM_STARTING_DEG + 15f),
-                new MoveJointToPosition(this.robotController.jointSubsystem, JointSubsystem.JointPositions.PUT)
+                new MoveJointToPosition(this.robotController.jointSubsystem, JointSubsystem.JointPositions.SCORE)
         ).schedule();
 
         new RotateRobotByDegCommand(this.robotController.driveBase, DEGS).schedule();

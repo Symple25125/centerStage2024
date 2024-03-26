@@ -10,17 +10,19 @@ import org.firstinspires.ftc.teamcode.util.TeamColor;
 public class Paths {
 
     public static SequentialCommandGroup generatePath(RobotController robotController, DetectionSide detectionSide) {
-         switch(detectionSide) {
+        if(detectionSide == null) detectionSide = DetectionSide.CLOSE;
+
+        switch(detectionSide) {
             case FAR: {
-                return new FarPurplePixelPath(robotController.driveBase, robotController.getTeamColor());
+                return new FarPurplePixelPath(robotController, robotController.getTeamColor());
             }
 
             case CENTER: {
-                return new CenterPurplePixelPath(robotController.driveBase);
+                return new CenterPurplePixelPath(robotController);
             }
 
             case CLOSE: {
-                return new ClosePurplePixelPath(robotController.driveBase, robotController.getTeamColor());
+                return new ClosePurplePixelPath(robotController, robotController.getTeamColor());
             }
         }
 

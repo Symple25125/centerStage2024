@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.vision;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -64,6 +65,7 @@ public class TeamPropDetector extends OpenCvPipeline {
         });
 
         webcam.setPipeline(this);
+        FtcDashboard.getInstance().startCameraStream(webcam, 30);
     }
 
     @Override

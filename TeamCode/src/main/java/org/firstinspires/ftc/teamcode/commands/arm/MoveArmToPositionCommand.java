@@ -12,6 +12,7 @@ public class MoveArmToPositionCommand extends CommandBase {
     public double MAX_POWER = 0.8f;
 
     private double point;
+    private final ArmSubsystem.ArmState state;
 
     public MoveArmToPositionCommand(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos, double kp) {
         addRequirements(armSubsystem);
@@ -21,7 +22,7 @@ public class MoveArmToPositionCommand extends CommandBase {
         this.pController = new PController(kp);
         this.pController.setTolerance(1);
 
-        ArmSubsystem.setState(pos.state);
+        this.state = pos.state;
     }
 
     public MoveArmToPositionCommand(ArmSubsystem armSubsystem, ArmSubsystem.ArmPositions pos) {
@@ -36,6 +37,7 @@ public class MoveArmToPositionCommand extends CommandBase {
 
     @Override
     public void initialize() {
+        ArmSubsystem.setState(this.state);
         this.pController.setSetPoint(this.point);
     }
 

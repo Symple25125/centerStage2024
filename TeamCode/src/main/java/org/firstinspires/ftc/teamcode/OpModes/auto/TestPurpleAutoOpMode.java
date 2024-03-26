@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.OpModes.auto;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.RobotController;
 import org.firstinspires.ftc.teamcode.commands.arm.InitArmForAutoCommand;
 import org.firstinspires.ftc.teamcode.paths.Paths;
+import org.firstinspires.ftc.teamcode.subsystems.ArmSubsystem;
 import org.firstinspires.ftc.teamcode.util.AutoOpMode;
 import org.firstinspires.ftc.teamcode.util.DetectionSide;
 import org.firstinspires.ftc.teamcode.util.OpModeType;
@@ -24,6 +26,7 @@ public class TestPurpleAutoOpMode extends AutoOpMode {
     @Override
     public void initialize() {
         this.robotController = new RobotController(OpModeType.Auto, hardwareMap, telemetry, gamepad1, gamepad2, TEAM_COLOR);
+        this.robotController.init();
     }
 
     @Override
@@ -44,6 +47,8 @@ public class TestPurpleAutoOpMode extends AutoOpMode {
 
     @Override
     public void sympleStart() {
+        this.robotController.sympleStart();
+
         SequentialCommandGroup pathCommands = Paths.generatePath(this.robotController, this.purplePixelSide);
 
         new InitArmForAutoCommand(this.robotController.jointSubsystem, this.robotController.armSubsystem, this.robotController.clawSubsystem)
@@ -53,9 +58,11 @@ public class TestPurpleAutoOpMode extends AutoOpMode {
 
 
     private void logData() {
-        telemetry.addData("ARM ANGLE", String.valueOf(this.robotController.armSubsystem.getCurrentPos()));
-//        telemetry.addData("Arm Command", String.valueOf(this.armSubsystem.getCurrentCommand().getName()));
+        robotController.getTelemetry().addData("ARM ANGLE", String.valueOf(this.robotController.armSubsystem.getCurrentPos()));
+        Command currentArmCommand = this.robotController.armSubsystem.getCurrentCommand();
+        if(currentArmCommand != null) robotController.getTelemetry().addData("Arm Command", String.valueOf(currentArmCommand.getName()));
+        this.robotController.teamPropDetector.telemetry();
 
-        telemetry.update();
+        robotController.getTelemetry().update();
     }
 }

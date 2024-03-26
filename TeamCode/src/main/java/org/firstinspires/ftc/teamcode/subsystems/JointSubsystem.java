@@ -14,7 +14,7 @@ public class JointSubsystem extends SubsystemBase {
     public static final double OFFSET = 0;
 
     public JointSubsystem(HardwareMap hMap) {
-        this.servo = new SympleServo(hMap, Servos.CLAW_JOINT.id, OFFSET - 180, OFFSET + 180, AngleUnit.DEGREES);
+        this.servo = new SympleServo(hMap, Servos.CLAW_JOINT.id, OFFSET - 135, OFFSET + 135, AngleUnit.DEGREES);
     }
 
     public void disableServo() {
@@ -33,11 +33,11 @@ public class JointSubsystem extends SubsystemBase {
     }
 
     public enum JointPositions {
-        PICKUP(50),
-        PUT(195),
-        HOOK(-120),
+        PICKUP(-35),
+        SCORE(95),
+        HOOK(-180),
         ZERO(0),
-        REST(95);
+        REST(-10);
 
 
         public final double deg;
