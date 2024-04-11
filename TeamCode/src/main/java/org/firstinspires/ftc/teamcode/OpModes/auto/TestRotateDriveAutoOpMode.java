@@ -37,7 +37,7 @@ public class TestRotateDriveAutoOpMode extends AutoOpMode {
 
         new ParallelCommandGroup(
                 new MoveArmToPositionCommand(this.robotController.armSubsystem, ArmSubsystem.ARM_STARTING_DEG + 15f),
-                new MoveJointToPosition(this.robotController.jointSubsystem, JointSubsystem.JointPositions.SCORE)
+                new MoveJointToPosition(this.robotController.jointSubsystem, JointSubsystem.JointPositions.SCORE_UPPER)
         ).schedule();
 
         new RotateRobotByDegCommand(this.robotController.driveBase, DEGS).schedule();

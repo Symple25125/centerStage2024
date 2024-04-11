@@ -35,6 +35,7 @@ import org.firstinspires.ftc.teamcode.subsystems.DriveBaseSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.DroneSubsystem;
 import org.firstinspires.ftc.teamcode.subsystems.JointSubsystem;
 import org.firstinspires.ftc.teamcode.util.OpModeType;
+import org.firstinspires.ftc.teamcode.util.ScorePositions;
 import org.firstinspires.ftc.teamcode.util.TeamColor;
 import org.firstinspires.ftc.teamcode.vision.TeamPropDetector;
 
@@ -171,12 +172,12 @@ public class RobotController {
     public void initActionButtons() {
         this.actionController.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whenPressed(
-                        new MoveArmToPositionCommand(this.armSubsystem, ArmSubsystem.ArmPositions.SCORE_LOWER)
+                        new GoToScorePositionCommand(this.clawSubsystem, this.armSubsystem, this.jointSubsystem, ScorePositions.LOWER)
                 );
 
         this.actionController.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(
-                        new GoToScorePositionCommand(this.clawSubsystem, this.armSubsystem, this.jointSubsystem)
+                        new GoToScorePositionCommand(this.clawSubsystem, this.armSubsystem, this.jointSubsystem, ScorePositions.UPPER)
                 );
 
         this.actionController.getGamepadButton(GamepadKeys.Button.A)

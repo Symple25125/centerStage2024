@@ -34,7 +34,8 @@ public class JointSubsystem extends SubsystemBase {
 
     public enum JointPositions {
         PICKUP(-35),
-        SCORE(95),
+        SCORE_UPPER(95),
+        SCORE_LOWER(75),
         HOOK(-180),
         ZERO(0),
         REST(-10);

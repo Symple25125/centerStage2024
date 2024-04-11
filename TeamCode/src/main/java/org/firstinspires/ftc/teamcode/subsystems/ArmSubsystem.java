@@ -87,7 +87,7 @@ public class ArmSubsystem extends SubsystemBase {
 
     public enum ArmPositions {
         PICKUP(ARM_STARTING_DEG, ArmState.PICKUP),
-        SCORE_LOWER(110, ArmState.SCORE_LOWER),
+        SCORE_LOWER(125, ArmState.SCORE_LOWER),
         SCORE_MIDDLE(105, ArmState.SCORE_MIDDLE),
         SCORE_UPPER(100, ArmState.SCORE_UPPER),
         HOOK(90, ArmState.HOOK),

@@ -38,7 +38,7 @@ public class BackAutoDriveOpMode extends AutoOpMode {
 
         new ParallelCommandGroup(
                 new MoveArmToPositionCommand(this.robotController.armSubsystem, ArmSubsystem.ArmPositions.HOOK),
-                new MoveJointToPosition(this.robotController.jointSubsystem, JointSubsystem.JointPositions.SCORE)
+                new MoveJointToPosition(this.robotController.jointSubsystem, JointSubsystem.JointPositions.SCORE_UPPER)
         ).schedule();
 
         new WaitCommand(wait_time)

@@ -26,7 +26,7 @@ public class FarPurplePixelPath extends SequentialCommandGroup {
         addCommands(
                 new DriveDistanceDriveCommand(robotController.driveBase, 0.6f).withTimeout(3500),
                 new RotateRobotByDegCommand(robotController.driveBase, rotation, rotationKp),
-                new PlacePurplePixelCommand(robotController),
+//                new PlacePurplePixelCommand(robotController),
                 new RotateRobotByDegCommand(robotController.driveBase, -rotation, rotationKp)
         );
     }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.commands.arm;
 
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.RobotController;
 import org.firstinspires.ftc.teamcode.commands.claw.MoveClawToPosition;
@@ -14,11 +15,17 @@ public class PlacePurplePixelCommand extends SequentialCommandGroup {
         super();
 
         addCommands(
+                new WaitCommand(250),
                 new MoveArmToPositionCommand(robotController.armSubsystem, ArmSubsystem.ArmPositions.PICKUP),
                 new MoveJointToPosition(robotController.jointSubsystem, JointSubsystem.JointPositions.PICKUP),
+                new WaitCommand(1000),
                 new MoveClawToPosition(robotController.clawSubsystem, ClawSubsystem.ClawPositions.HALF_OPEN),
+                new WaitCommand(1000),
                 new MoveJointToPosition(robotController.jointSubsystem, JointSubsystem.JointPositions.REST),
-                new ArmGoToRestPositionCommand(robotController.armSubsystem)
+                new ArmGoToRestPositionCommand(robotController.armSubsystem),
+                new WaitCommand(250)
         );
+
+        this.withTimeout(4000);
     }
 }
